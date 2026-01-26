@@ -1,0 +1,103 @@
+# 🤖 Agent Project - Git Ignore File
+
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============================================
+# Environment Variables & Secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+
+# IMPORTANTE: NON committare MAI la tua API key!
+# Usa solo .env.example come template
+
+# ============================================
+# TypeScript Build Output
+# ============================================
+dist/
+build/
+*.tsbuildinfo
+
+# ============================================
+# IDE & Editor Files
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ============================================
+# Test Coverage
+# ============================================
+coverage/
+*.lcov
+.nyc_output/
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================
+# OS Files
+# ============================================
+.DS_Store
+Thumbs.db
+*.bak
+
+# ============================================
+# Temporary Files
+# ============================================
+*.tmp
+*.temp
+.cache/
+
+# ============================================
+# Files generati dall'agent durante i test
+# ============================================
+# Aggiungi qui i file che l'agent crea durante i test
+# Esempi:
+fizzbuzz.ts
+fizzbuzz.js
+hello.txt
+test.txt
+riddle.txt
+test-project/
+
+# ============================================
+# Output dell'agent
+# ============================================
+# Se vuoi ignorare file generati dall'agent, aggiungili qui
+# Esempio:
+# agent-output/
+
+# ============================================
+# Lock files (opzionale - vedi nota sotto)
+# ============================================
+# Uncomment se lavori da solo:
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# NOTA: Per progetti di team, è meglio committare i lock files
+# per garantire dipendenze consistenti tra tutti i developer
+
+# ============================================
+# Altri
+# ============================================
+*.orig
+.eslintcache
