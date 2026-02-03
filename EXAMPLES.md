@@ -46,6 +46,21 @@ npx ts-node agent.ts "Create a simplified version of agent.ts called simple-agen
 npx ts-node agent.ts "Create a directory called examples, then create 3 files inside: example1.ts, example2.ts, example3.ts, each with a simple console.log"
 ```
 
+### 9. Git Status Check
+```bash
+npx ts-node agent.ts "Show me the current git status"
+```
+
+### 10. Stage and Commit
+```bash
+npx ts-node agent.ts "Stage all modified files and create a commit with message 'feat: add new examples'"
+```
+
+### 11. Git Workflow
+```bash
+npx ts-node agent.ts "Check git status, show me what changed, and if everything looks good, stage and commit with message 'docs: update documentation'"
+```
+
 ## Creative Tests
 
 ### 9. Riddle Test (inspired by Geoffrey)

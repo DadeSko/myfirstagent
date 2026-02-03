@@ -97,11 +97,13 @@ while (true) {
 }
 ```
 
-### The 4 Primitives (from README.md)
+### The 6 Primitives (from README.md)
 1. **read_file** - Read contents
 2. **list_files** - Explore directories
 3. **bash** - Execute commands
 4. **edit_file** - Modify/create files
+5. **code_search** - search/understand your codebase
+6. **git_operations** execute git commands
 
 ### Geoffrey's Wisdom
 > "300 lines of code in a loop with LLM tokens"
