@@ -11,12 +11,13 @@ Agent TypeScript costruito seguendo la metodologia di Geoffrey Huntley.
 Come dice Geoffrey:
 > "300 linee di codice in un loop con LLM tokens. È davvero così semplice."
 
-Questo agent implementa i **4 primitivi fondamentali** di ogni coding agent:
+Questo agent implementa i **5 primitivi fondamentali** di ogni coding agent professionale:
 
 1. **📖 Read Tool** - Legge file
 2. **📁 List Tool** - Elenca directory
 3. **⚙️ Bash Tool** - Esegue comandi
 4. **✏️ Edit Tool** - Modifica/crea file
+5. **🔍 Code Search Tool** - Cerca pattern nel codice (ripgrep)
 
 ## 🚀 Setup
 
@@ -42,6 +43,12 @@ npx ts-node agent.ts "Crea fizzbuzz.ts che stampa fizzbuzz fino a 20 ed eseguilo
 
 # Esempio 4: Analisi codice
 npx ts-node agent.ts "Leggi agent.ts e dimmi quante funzioni ci sono"
+
+# Esempio 5: Code Search (nuovo!)
+npx ts-node agent.ts "Cerca tutte le funzioni async nel progetto"
+
+# Esempio 6: Find TODOs
+npx ts-node agent.ts "Trova tutti i TODO e FIXME nel codice"
 ```
 
 **Nota**: Usa `npx ts-node` invece di solo `ts-node` se non hai installato ts-node globalmente.
@@ -75,7 +82,7 @@ Add Result    Show Response
 [Loop Back]
 ```
 
-## 🛠️ I 4 Primitivi
+## 🛠️ I 5 Primitivi
 
 ### 1. Read File Tool
 ```typescript
@@ -100,6 +107,35 @@ Esegue comandi shell.
 await editFile("test.txt", "", "nuovo contenuto")
 ```
 Crea o modifica file.
+
+### 5. Code Search Tool
+```typescript
+await codeSearch({ pattern: "async function", file_type: "ts" })
+```
+Cerca pattern nel codice usando ripgrep. Il 5° primitivo secondo Geoffrey:
+> "What if I were to tell you that there is no magic for indexing source code? Nearly every coding tool uses ripgrep under the hood."
+
+## 📚 Documentation
+
+Documentazione completa disponibile:
+
+- **[QUICKSTART.md](QUICKSTART.md)** - Setup rapido in 5 minuti
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Deep dive nell'architettura dell'agent
+- **[EXAMPLES.md](EXAMPLES.md)** - Test cases ed esempi pratici
+- **[LEARNING-JOURNAL.md](LEARNING-JOURNAL.md)** - Technical progress e insights
+
+### Guide Tecniche Approfondite
+
+- **[TOOL-DEFINITIONS-GUIDE.md](TOOL-DEFINITIONS-GUIDE.md)** - Tool definition structure
+- **[ERROR-HANDLING-GUIDE.md](ERROR-HANDLING-GUIDE.md)** - Error handling patterns
+- **[FILESYSTEM-GUIDE.md](FILESYSTEM-GUIDE.md)** - Filesystem operations
+- **[CODE-SEARCH-GUIDE.md](CODE-SEARCH-GUIDE.md)** - Code search implementation
+
+### Setup & Troubleshooting
+
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Soluzioni ai problemi comuni
+- **[GITHUB-SETUP.md](GITHUB-SETUP.md)** - Guida per pubblicare su GitHub
+- **[GIT-CHEATSHEET.md](GIT-CHEATSHEET.md)** - Comandi Git essenziali
 
 ## 🎓 Lezioni Chiave da Geoffrey
 
@@ -131,12 +167,13 @@ Crea o modifica file.
 
 ## 🔮 Prossimi Passi
 
-Una volta che padroneggi questi 4 primitivi, puoi:
+Una volta che padroneggi questi 5 primitivi, puoi:
 
-1. Aggiungere un **Search Tool** (ripgrep)
-2. Implementare **MCP servers**
-3. Creare agent specializzati per il tuo workflow
+1. ✅ ~~Aggiungere un **Search Tool** (ripgrep)~~ - Completato!
+2. Implementare **MCP servers** per estendere le capabilities
+3. Creare agent specializzati per workflow specifici
 4. Costruire orchestrazioni multi-agent
+5. Aggiungere caching e ottimizzazioni performance
 
 ## 💭 Citazioni Chiave
 
@@ -148,13 +185,22 @@ Una volta che padroneggi questi 4 primitivi, puoi:
 
 ## 📚 Risorse
 
-- [Geoffrey's Workshop](https://ghuntley.com/agent/)
-- [Workshop Materials (Go)](https://github.com/ghuntley/how-to-build-a-coding-agent)
-- [Anthropic SDK Docs](https://docs.anthropic.com)
+### Geoffrey Huntley's Materials
+- [Agent Workshop](https://ghuntley.com/agent/) - Workshop completo su come costruire agent
+- [Workshop Materials (Go)](https://github.com/ghuntley/how-to-build-a-coding-agent) - Implementazione in Go
+- [6-Month Recap](https://ghuntley.com/six-month-recap/) - Insights sul futuro degli agent
+
+### Anthropic Documentation
+- [Anthropic SDK Docs](https://docs.anthropic.com) - Documentazione ufficiale
+- [Tool Use Guide](https://docs.anthropic.com/en/docs/tool-use) - Come usare i tool
+
+### Technical References
+- [ripgrep](https://github.com/BurntSushi/ripgrep) - Il tool di code search che tutti usano
+- [Node.js fs/promises](https://nodejs.org/api/fs.html#promises-api) - Filesystem operations
 
 ## ✨ Credits
 
-Agent costruito da **Davide** nel contesto del programma "Da Editor a Technical Contributor" per Effectual Technologies, seguendo gli insegnamenti di Geoffrey Huntley.
+Agent costruito da **Davide** nel contesto del programma "Da Editor a Technical Contributor" per Effectful Technologies, seguendo gli insegnamenti di Geoffrey Huntley.
 
 ---
 
