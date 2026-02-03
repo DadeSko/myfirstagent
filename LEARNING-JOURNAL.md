@@ -1,32 +1,32 @@
 # 📓 Learning Journal - Agent Development
 
-Documentazione del percorso di apprendimento nella costruzione di coding agents seguendo Geoffrey Huntley's metodologia.
+Documentation of the learning journey in building coding agents following Geoffrey Huntley's methodology.
 
 ---
 
-## 📅 Settimana 1 - Agent Foundations (26/01/2026)
+## 📅 Week 1 - Agent Foundations (01/26/2026)
 
-### ✅ Concetti Tecnici Acquisiti
+### ✅ Technical Concepts Acquired
 
 #### Agent Architecture
-- [x] **Agentic Loop** - Il pattern fondamentale `while(true)` con tool calls
-- [x] **4 Primitivi Base** - read_file, list_files, bash, edit_file
-- [x] **Claude Sonnet** - Modello "agentic" ottimizzato per tool calling
-- [x] **Context Window Management** - Limitazioni e best practices
-- [x] **Tool Descriptions** - "Billboards" che guidano il latent space del model
+- [x] **Agentic Loop** - The fundamental `while(true)` pattern with tool calls
+- [x] **4 Base Primitives** - read_file, list_files, bash, edit_file
+- [x] **Claude Sonnet** - "Agentic" model optimized for tool calling
+- [x] **Context Window Management** - Limitations and best practices
+- [x] **Tool Descriptions** - "Billboards" that guide the model's latent space
 
 #### TypeScript & Node.js
 - [x] **Async/Await Patterns** - Promise-based filesystem operations
-- [x] **Anthropic SDK** - Messages API e tool use integration
-- [x] **Error Handling** - Try-catch patterns per agent reliability
-- [x] **File System Operations** - fs/promises API completa
+- [x] **Anthropic SDK** - Messages API and tool use integration
+- [x] **Error Handling** - Try-catch patterns for agent reliability
+- [x] **File System Operations** - Complete fs/promises API
 
 #### Tool Definition Structure
 ```typescript
 interface Tool {
-  name: string;              // Snake_case, descrittivo
-  description: string;       // Billboard per Claude
-  input_schema: {            // JSON Schema per parametri
+  name: string;              // Snake_case, descriptive
+  description: string;       // Billboard for Claude
+  input_schema: {            // JSON Schema for parameters
     type: "object";
     properties: {...};
     required?: string[];
@@ -35,13 +35,13 @@ interface Tool {
 ```
 
 #### Error Handling Layers
-1. **Tool Level** - Return error messages invece di throw
-2. **Executor Level** - Wrapper con fallback per tool sconosciuti
-3. **Loop Level** - API error handling e max iterations protection
+1. **Tool Level** - Return error messages instead of throw
+2. **Executor Level** - Wrapper with fallback for unknown tools
+3. **Loop Level** - API error handling and max iterations protection
 
 ---
 
-## 🔧 Skills Tecniche Implementate
+## 🔧 Technical Skills Implemented
 
 ### 1. Filesystem Operations
 ```typescript
@@ -49,16 +49,16 @@ interface Tool {
 import * as fs from "fs/promises";
 import * as path from "path";
 
-// Pattern: try-catch con error messages descrittivi
-// Best practice: path.join() per cross-platform compatibility
-// Security: Path normalization e validation
+// Pattern: try-catch with descriptive error messages
+// Best practice: path.join() for cross-platform compatibility
+// Security: Path normalization and validation
 ```
 
 **Key Learning:**
-- `fs/promises` > callbacks per codice pulito
+- `fs/promises` > callbacks for clean code
 - Error codes: `ENOENT`, `EACCES`, `EISDIR`
 - Atomic writes: temp file + rename pattern
-- Streams per file grandi (>10MB)
+- Streams for large files (>10MB)
 
 ### 2. Tool Implementation Pattern
 ```typescript
@@ -75,7 +75,7 @@ async function toolFunction(params): Promise<string> {
 }
 ```
 
-### 3. Code Search (5° Primitivo)
+### 3. Code Search (5th Primitive)
 ```typescript
 // ripgrep integration
 // Pattern: Build command → Execute → Parse output → Format
@@ -83,36 +83,36 @@ async function toolFunction(params): Promise<string> {
 ```
 
 **Key Learning:**
-- ripgrep è lo standard de-facto (usato da Cursor, VS Code, etc.)
-- Exit code 1 = no matches (non è un errore!)
+- ripgrep is the de-facto standard (used by Cursor, VS Code, etc.)
+- Exit code 1 = no matches (not an error!)
 - Parsing output: `file:line:content` format
 - Security: escape input, timeout protection
 
 ---
 
-## 🧪 Progetti & Esperimenti
+## 🧪 Projects & Experiments
 
-### Agent Base (agent.ts)
-**Status:** ✅ Completato  
-**Tech Stack:** TypeScript, Anthropic SDK, Node.js fs/promises  
+### Base Agent (agent.ts)
+**Status:** ✅ Completed
+**Tech Stack:** TypeScript, Anthropic SDK, Node.js fs/promises
 **Features:**
-- 4 primitivi funzionanti
-- Error handling robusto
-- Logging completo
-- Loop agentico con max iterations
+- 4 working primitives
+- Robust error handling
+- Complete logging
+- Agentic loop with max iterations
 
 **Metrics:**
-- ~300 linee di codice
-- 4 tools implementati
+- ~300 lines of code
+- 4 tools implemented
 - 100% TypeScript
 
 ### Code Search Tool
-**Status:** ✅ Implementato  
-**Tech:** ripgrep wrapper  
+**Status:** ✅ Implemented
+**Tech:** ripgrep wrapper
 **Features:**
-- Pattern search con regex
+- Pattern search with regex
 - File type filtering
-- Output parsing e formatting
+- Output parsing and formatting
 - Context lines support
 
 ---
@@ -145,52 +145,52 @@ async function toolFunction(params): Promise<string> {
 > "It's just a function with a billboard on top that nudges the LLM's latent space"
 > — Geoffrey Huntley
 
-**Learning:** La quality della description determina quando Claude userà il tool. Deve includere:
-- Cosa fa il tool
-- Quando usarlo
-- Quando NON usarlo
+**Learning:** The quality of the description determines when Claude will use the tool. It should include:
+- What the tool does
+- When to use it
+- When NOT to use it
 
 ### 2. Context Window is Limited
-**Learning:** Meno è meglio. Ogni tool definition, messaggio, e tool result consuma context.
+**Learning:** Less is more. Every tool definition, message, and tool result consumes context.
 - Advertised: 200k tokens
 - System prompt: ~500 tokens
 - Tool definitions: ~2k tokens
 - Usable: ~176k tokens
 
-**Best Practice:** Una task per context window, poi clear.
+**Best Practice:** One task per context window, then clear.
 
 ### 3. Error Handling Strategy
-**Learning:** Return errors come stringhe invece di throw.
+**Learning:** Return errors as strings instead of throwing.
 
-**Perché:** Permette a Claude di:
-- Ricevere l'errore come tool result
-- Comprendere cosa è andato storto
-- Decidere un'azione alternativa
-- Informare l'utente in modo chiaro
+**Why:** This allows Claude to:
+- Receive the error as tool result
+- Understand what went wrong
+- Decide on an alternative action
+- Inform the user clearly
 
 ### 4. ripgrep is the Secret Sauce
-**Learning:** Non c'è "magia" nell'indexing. Tutti i major tools (Cursor, Copilot, etc.) usano ripgrep sotto il cofano.
+**Learning:** There's no "magic" in indexing. All major tools (Cursor, Copilot, etc.) use ripgrep under the hood.
 
-**Implicazioni:**
-- Code search è un must-have
-- Performance è eccellente
-- Rispetta .gitignore automaticamente
+**Implications:**
+- Code search is a must-have
+- Performance is excellent
+- Respects .gitignore automatically
 
 ---
 
 ## 🎯 Technical Challenges & Solutions
 
 ### Challenge 1: Tool Selection Logic
-**Problem:** Come fa Claude a decidere quale tool usare?  
-**Solution:** Tool descriptions agiscono come "billboards" nel latent space. Più sono specifiche e chiare, meglio Claude sceglie.
+**Problem:** How does Claude decide which tool to use?
+**Solution:** Tool descriptions act as "billboards" in the latent space. The more specific and clear they are, the better Claude chooses.
 
 ### Challenge 2: Error Propagation
-**Problem:** Se un tool fallisce, l'agent crasha?  
-**Solution:** Return error messages invece di throw. Claude riceve l'errore e può reagire.
+**Problem:** If a tool fails, does the agent crash?
+**Solution:** Return error messages instead of throw. Claude receives the error and can react.
 
 ### Challenge 3: Path Security
-**Problem:** Path traversal attacks (es. `../../../etc/passwd`)  
-**Solution:** 
+**Problem:** Path traversal attacks (e.g., `../../../etc/passwd`)
+**Solution:**
 ```typescript
 const safePath = path.normalize(userInput);
 const absolute = path.resolve(safePath);
@@ -200,8 +200,8 @@ if (!absolute.startsWith(process.cwd())) {
 ```
 
 ### Challenge 4: Large File Handling
-**Problem:** File >10MB consumano troppa memoria  
-**Solution:** Check dimensione prima di read, usare streams se necessario.
+**Problem:** Files >10MB consume too much memory
+**Solution:** Check size before read, use streams if necessary.
 
 ---
 
@@ -287,10 +287,10 @@ async function myTool(param: string): Promise<string> {
   try {
     // Validate
     if (!param) return "Error: param required";
-    
+
     // Execute
     const result = await operation(param);
-    
+
     // Log & return
     console.log(`✓ Success: ${result}`);
     return result;
@@ -362,10 +362,10 @@ async function executeTool(name: string, input: any): Promise<string> {
 
 ---
 
-**Last Updated:** 26/01/2026  
-**Status:** Active Development  
-**Framework:** Geoffrey Huntley's Methodology  
-**Context:** Part of "Editor to Technical Contributor" program at Effectful Technologies  
+**Last Updated:** 01/26/2026
+**Status:** Active Development
+**Framework:** Geoffrey Huntley's Methodology
+**Context:** Part of "Editor to Technical Contributor" program at Effectful Technologies
 **Goal:** Production-Ready Coding Agent
 
 ---

@@ -1,25 +1,25 @@
 # 📁 Filesystem Operations - Deep Dive
 
-Guida completa su come gli agent interagiscono con il file system in modo sicuro e professionale.
+Complete guide on how agents interact with the file system in a safe and professional manner.
 
 ---
 
-## 🎯 Cosa Sono le Filesystem Operations?
+## 🎯 What Are Filesystem Operations?
 
-Le filesystem operations sono le **primitive fondamentali** che permettono all'agent di:
-- 📖 **Leggere** file e directory
-- ✏️ **Scrivere** e modificare file
-- 📁 **Navigare** la struttura del progetto
-- 🗑️ **Eliminare** file (con cautela!)
-- 🔍 **Cercare** contenuti
+Filesystem operations are the **fundamental primitives** that allow the agent to:
+- 📖 **Read** files and directories
+- ✏️ **Write** and modify files
+- 📁 **Navigate** the project structure
+- 🗑️ **Delete** files (with caution!)
+- 🔍 **Search** contents
 
-**Senza filesystem operations, un coding agent è cieco e muto!**
+**Without filesystem operations, a coding agent is blind and mute!**
 
 ---
 
-## 📚 Le Node.js fs Promises API
+## 📚 The Node.js fs Promises API
 
-### Perché Promises invece di Callbacks?
+### Why Promises Instead of Callbacks?
 
 ```typescript
 // ❌ OLD WAY - Callbacks (callback hell)
@@ -43,13 +43,13 @@ try {
 }
 ```
 
-**Nel nostro agent usiamo**: `import * as fs from "fs/promises"`
+**In our agent we use**: `import * as fs from "fs/promises"`
 
 ---
 
-## 🔧 Operazione 1: READ (Leggere File)
+## 🔧 Operation 1: READ (Reading Files)
 
-### API Base: fs.readFile()
+### Base API: fs.readFile()
 
 ```typescript
 import * as fs from "fs/promises";
@@ -68,10 +68,10 @@ async function readFile(filePath: string): Promise<string> {
 ### Encoding Options
 
 ```typescript
-// UTF-8 (testo normale)
+// UTF-8 (normal text)
 const text = await fs.readFile("file.txt", "utf-8");
 
-// Buffer (file binari)
+// Buffer (binary files)
 const buffer = await fs.readFile("image.png");
 
 // ASCII
@@ -81,24 +81,24 @@ const ascii = await fs.readFile("file.txt", "ascii");
 const base64 = await fs.readFile("file.txt", "base64");
 ```
 
-### Esempio Real-World
+### Real-World Example
 
 ```typescript
 async function readFile(filePath: string): Promise<string> {
   try {
-    // Check se file esiste prima
+    // Check if file exists first
     await fs.access(filePath);
-    
+
     const content = await fs.readFile(filePath, "utf-8");
-    
-    // Log info utili
+
+    // Log useful info
     console.log(`✓ Read file: ${filePath} (${content.length} bytes)`);
-    
+
     return content;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
-    
-    // Error messages specifici
+
+    // Specific error messages
     if (err.code === "ENOENT") {
       return `Error: File '${filePath}' does not exist`;
     } else if (err.code === "EACCES") {
@@ -106,7 +106,7 @@ async function readFile(filePath: string): Promise<string> {
     } else if (err.code === "EISDIR") {
       return `Error: '${filePath}' is a directory, not a file`;
     }
-    
+
     return `Error reading file: ${err.message}`;
   }
 }
@@ -114,28 +114,28 @@ async function readFile(filePath: string): Promise<string> {
 
 ### Common Error Codes
 
-| Code | Significato | Cosa Fare |
-|------|-------------|-----------|
-| `ENOENT` | File non esiste | Suggerisci di creare il file |
-| `EACCES` | Permission denied | Suggerisci chmod o sudo |
-| `EISDIR` | È una directory | Usa readdir invece |
-| `EMFILE` | Too many open files | Chiudi file aperti |
+| Code | Meaning | What to Do |
+|------|---------|------------|
+| `ENOENT` | File doesn't exist | Suggest creating the file |
+| `EACCES` | Permission denied | Suggest chmod or sudo |
+| `EISDIR` | It's a directory | Use readdir instead |
+| `EMFILE` | Too many open files | Close open files |
 
 ---
 
-## 📝 Operazione 2: WRITE (Scrivere File)
+## 📝 Operation 2: WRITE (Writing Files)
 
-### API Base: fs.writeFile()
+### Base API: fs.writeFile()
 
 ```typescript
 async function writeFile(
-  filePath: string, 
+  filePath: string,
   content: string
 ): Promise<string> {
   try {
     // Signature: writeFile(path, data, encoding)
     await fs.writeFile(filePath, content, "utf-8");
-    
+
     console.log(`✓ Wrote file: ${filePath} (${content.length} bytes)`);
     return `Successfully wrote ${filePath}`;
   } catch (error) {
@@ -147,16 +147,16 @@ async function writeFile(
 ### Write vs Append
 
 ```typescript
-// WRITE - Sovrascrive tutto il file
+// WRITE - Overwrites the entire file
 await fs.writeFile("log.txt", "New content");
-// File ora contiene: "New content"
+// File now contains: "New content"
 
-// APPEND - Aggiunge alla fine
+// APPEND - Adds to the end
 await fs.appendFile("log.txt", "\nMore content");
-// File ora contiene: "New content\nMore content"
+// File now contains: "New content\nMore content"
 ```
 
-### Esempio: Edit File Tool
+### Example: Edit File Tool
 
 ```typescript
 async function editFile(
@@ -166,28 +166,28 @@ async function editFile(
 ): Promise<string> {
   try {
     if (oldStr === "") {
-      // CREA NUOVO FILE
+      // CREATE NEW FILE
       await fs.writeFile(filePath, newStr, "utf-8");
       console.log(`✓ Created: ${filePath} (${newStr.length} bytes)`);
       return `Successfully created file ${filePath}`;
-      
+
     } else {
-      // MODIFICA FILE ESISTENTE
-      
-      // 1. Leggi contenuto attuale
+      // MODIFY EXISTING FILE
+
+      // 1. Read current content
       const content = await fs.readFile(filePath, "utf-8");
-      
-      // 2. Valida che oldStr esista
+
+      // 2. Validate that oldStr exists
       if (!content.includes(oldStr)) {
         return `Error: Could not find "${oldStr.substring(0, 50)}..." in ${filePath}`;
       }
-      
+
       // 3. Replace
       const newContent = content.replace(oldStr, newStr);
-      
-      // 4. Scrivi nuovo contenuto
+
+      // 4. Write new content
       await fs.writeFile(filePath, newContent, "utf-8");
-      
+
       console.log(`✓ Edited: ${filePath}`);
       return `Successfully edited file ${filePath}`;
     }
@@ -197,30 +197,30 @@ async function editFile(
 }
 ```
 
-### Atomic Writes (Avanzato)
+### Atomic Writes (Advanced)
 
 ```typescript
-// ❌ NON-ATOMIC - Se crasha a metà, file corrotto!
+// ❌ NON-ATOMIC - If it crashes midway, file corrupted!
 await fs.writeFile("important.json", JSON.stringify(data));
 
-// ✅ ATOMIC - Scrive in temp, poi rename (atomico in Unix)
+// ✅ ATOMIC - Write to temp, then rename (atomic on Unix)
 import * as path from "path";
 
 async function writeFileAtomic(
-  filePath: string, 
+  filePath: string,
   content: string
 ): Promise<void> {
   const tempPath = `${filePath}.tmp`;
-  
+
   try {
-    // 1. Scrivi in file temporaneo
+    // 1. Write to temporary file
     await fs.writeFile(tempPath, content, "utf-8");
-    
-    // 2. Rename (atomico!)
+
+    // 2. Rename (atomic!)
     await fs.rename(tempPath, filePath);
-    
+
   } catch (error) {
-    // Cleanup temp file se fallisce
+    // Cleanup temp file if it fails
     try {
       await fs.unlink(tempPath);
     } catch {}
@@ -231,16 +231,16 @@ async function writeFileAtomic(
 
 ---
 
-## 📁 Operazione 3: LIST (Elencare Directory)
+## 📁 Operation 3: LIST (Listing Directories)
 
-### API Base: fs.readdir()
+### Base API: fs.readdir()
 
 ```typescript
 async function listFiles(dirPath: string = "."): Promise<string> {
   try {
-    // readdir restituisce array di nomi
+    // readdir returns array of names
     const files = await fs.readdir(dirPath);
-    
+
     return files.join("\n");
   } catch (error) {
     return `Error listing directory: ${(error as Error).message}`;
@@ -248,38 +248,38 @@ async function listFiles(dirPath: string = "."): Promise<string> {
 }
 ```
 
-### Con FileType Info (Meglio!)
+### With FileType Info (Better!)
 
 ```typescript
 async function listFiles(dirPath: string = "."): Promise<string> {
   try {
-    // withFileTypes: true → restituisce Dirent objects
+    // withFileTypes: true → returns Dirent objects
     const files = await fs.readdir(dirPath, { withFileTypes: true });
-    
+
     const fileList = files.map((file) => {
-      // Dirent ha metodi: isFile(), isDirectory(), isSymbolicLink()
+      // Dirent has methods: isFile(), isDirectory(), isSymbolicLink()
       const prefix = file.isDirectory() ? "📁" : "📄";
       return `${prefix} ${file.name}`;
     });
-    
+
     console.log(`✓ Listed ${files.length} items in ${dirPath}`);
     return fileList.join("\n");
-    
+
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
-    
+
     if (err.code === "ENOENT") {
       return `Error: Directory '${dirPath}' does not exist`;
     } else if (err.code === "ENOTDIR") {
       return `Error: '${dirPath}' is not a directory`;
     }
-    
+
     return `Error listing files: ${err.message}`;
   }
 }
 ```
 
-### Recursive Listing (Avanzato)
+### Recursive Listing (Advanced)
 
 ```typescript
 async function listFilesRecursive(
@@ -287,20 +287,20 @@ async function listFilesRecursive(
   prefix: string = ""
 ): Promise<string[]> {
   const result: string[] = [];
-  
+
   try {
     const files = await fs.readdir(dirPath, { withFileTypes: true });
-    
+
     for (const file of files) {
       const fullPath = path.join(dirPath, file.name);
       const icon = file.isDirectory() ? "📁" : "📄";
-      
+
       result.push(`${prefix}${icon} ${file.name}`);
-      
-      // Ricorsione per subdirectories
+
+      // Recursion for subdirectories
       if (file.isDirectory()) {
         const subFiles = await listFilesRecursive(
-          fullPath, 
+          fullPath,
           prefix + "  "
         );
         result.push(...subFiles);
@@ -309,11 +309,11 @@ async function listFilesRecursive(
   } catch (error) {
     result.push(`${prefix}❌ Error: ${(error as Error).message}`);
   }
-  
+
   return result;
 }
 
-// Uso:
+// Usage:
 const tree = await listFilesRecursive("./src");
 console.log(tree.join("\n"));
 ```
@@ -330,7 +330,7 @@ Output:
 
 ---
 
-## 🔍 Operazione 4: STAT (Info su File)
+## 🔍 Operation 4: STAT (File Info)
 
 ### API: fs.stat()
 
@@ -338,7 +338,7 @@ Output:
 async function getFileInfo(filePath: string): Promise<string> {
   try {
     const stats = await fs.stat(filePath);
-    
+
     return `
 File: ${filePath}
 Size: ${stats.size} bytes
@@ -348,7 +348,7 @@ Is File: ${stats.isFile()}
 Is Directory: ${stats.isDirectory()}
 Permissions: ${stats.mode.toString(8)}
     `.trim();
-    
+
   } catch (error) {
     return `Error getting file info: ${(error as Error).message}`;
   }
@@ -359,12 +359,12 @@ Permissions: ${stats.mode.toString(8)}
 
 ```typescript
 interface Stats {
-  size: number;              // Dimensione in bytes
-  birthtime: Date;          // Data creazione
-  mtime: Date;              // Data ultima modifica
-  atime: Date;              // Data ultimo accesso
-  mode: number;             // Permessi (Unix)
-  
+  size: number;              // Size in bytes
+  birthtime: Date;          // Creation date
+  mtime: Date;              // Last modification date
+  atime: Date;              // Last access date
+  mode: number;             // Permissions (Unix)
+
   isFile(): boolean;
   isDirectory(): boolean;
   isSymbolicLink(): boolean;
@@ -378,7 +378,7 @@ interface Stats {
 ### Check Existence
 
 ```typescript
-// ✅ MODO CORRETTO - fs.access()
+// ✅ CORRECT WAY - fs.access()
 async function fileExists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);
@@ -388,7 +388,7 @@ async function fileExists(filePath: string): Promise<boolean> {
   }
 }
 
-// ❌ EVITA - fs.stat() è più lento
+// ❌ AVOID - fs.stat() is slower
 async function fileExists(filePath: string): Promise<boolean> {
   try {
     await fs.stat(filePath);
@@ -401,12 +401,12 @@ async function fileExists(filePath: string): Promise<boolean> {
 
 ---
 
-## 🗑️ Operazione 5: DELETE (Eliminare File)
+## 🗑️ Operation 5: DELETE (Deleting Files)
 
-### API: fs.unlink() per file, fs.rm() per directories
+### API: fs.unlink() for files, fs.rm() for directories
 
 ```typescript
-// ELIMINA FILE
+// DELETE FILE
 async function deleteFile(filePath: string): Promise<string> {
   try {
     await fs.unlink(filePath);
@@ -417,7 +417,7 @@ async function deleteFile(filePath: string): Promise<string> {
   }
 }
 
-// ELIMINA DIRECTORY (recursive)
+// DELETE DIRECTORY (recursive)
 async function deleteDirectory(dirPath: string): Promise<string> {
   try {
     await fs.rm(dirPath, { recursive: true, force: true });
@@ -429,32 +429,32 @@ async function deleteDirectory(dirPath: string): Promise<string> {
 }
 ```
 
-### Safe Delete (con conferma)
+### Safe Delete (with confirmation)
 
 ```typescript
 async function safeDelete(filePath: string): Promise<string> {
   try {
-    // 1. Check se esiste
+    // 1. Check if exists
     const exists = await fileExists(filePath);
     if (!exists) {
       return `Error: ${filePath} does not exist`;
     }
-    
+
     // 2. Get info
     const stats = await fs.stat(filePath);
-    
-    // 3. Backup prima di eliminare? (opzionale)
+
+    // 3. Backup before deleting? (optional)
     if (stats.size > 1024 * 1024) {  // > 1MB
       const backupPath = `${filePath}.backup`;
       await fs.copyFile(filePath, backupPath);
       console.log(`📦 Created backup: ${backupPath}`);
     }
-    
+
     // 4. Delete
     await fs.unlink(filePath);
     console.log(`✓ Deleted: ${filePath}`);
     return `Successfully deleted ${filePath}`;
-    
+
   } catch (error) {
     return `Error deleting file: ${(error as Error).message}`;
   }
@@ -463,26 +463,26 @@ async function safeDelete(filePath: string): Promise<string> {
 
 ---
 
-## 📂 Operazione 6: MKDIR (Creare Directory)
+## 📂 Operation 6: MKDIR (Creating Directories)
 
 ### API: fs.mkdir()
 
 ```typescript
 async function createDirectory(dirPath: string): Promise<string> {
   try {
-    // recursive: true → crea anche parent directories
+    // recursive: true → also creates parent directories
     await fs.mkdir(dirPath, { recursive: true });
-    
+
     console.log(`✓ Created directory: ${dirPath}`);
     return `Successfully created ${dirPath}`;
-    
+
   } catch (error) {
     return `Error creating directory: ${(error as Error).message}`;
   }
 }
 ```
 
-### Esempio: mkdir con validazione
+### Example: mkdir with validation
 
 ```typescript
 async function createDirectory(dirPath: string): Promise<string> {
@@ -490,9 +490,9 @@ async function createDirectory(dirPath: string): Promise<string> {
   if (!dirPath || dirPath.trim() === "") {
     return "Error: Directory path cannot be empty";
   }
-  
+
   try {
-    // Check se già esiste
+    // Check if already exists
     const exists = await fileExists(dirPath);
     if (exists) {
       const stats = await fs.stat(dirPath);
@@ -502,12 +502,12 @@ async function createDirectory(dirPath: string): Promise<string> {
         return `Error: ${dirPath} exists but is not a directory`;
       }
     }
-    
-    // Crea directory
+
+    // Create directory
     await fs.mkdir(dirPath, { recursive: true });
     console.log(`✓ Created directory: ${dirPath}`);
     return `Successfully created directory ${dirPath}`;
-    
+
   } catch (error) {
     return `Error creating directory: ${(error as Error).message}`;
   }
@@ -516,13 +516,13 @@ async function createDirectory(dirPath: string): Promise<string> {
 
 ---
 
-## 🔄 Operazione 7: COPY & MOVE
+## 🔄 Operation 7: COPY & MOVE
 
 ### Copy File
 
 ```typescript
 async function copyFile(
-  source: string, 
+  source: string,
   dest: string
 ): Promise<string> {
   try {
@@ -539,31 +539,31 @@ async function copyFile(
 
 ```typescript
 async function copyDirectory(
-  source: string, 
+  source: string,
   dest: string
 ): Promise<string> {
   try {
-    // Crea destination directory
+    // Create destination directory
     await fs.mkdir(dest, { recursive: true });
-    
-    // Leggi tutti i file
+
+    // Read all files
     const files = await fs.readdir(source, { withFileTypes: true });
-    
-    // Copy ricorsivamente
+
+    // Copy recursively
     for (const file of files) {
       const srcPath = path.join(source, file.name);
       const destPath = path.join(dest, file.name);
-      
+
       if (file.isDirectory()) {
         await copyDirectory(srcPath, destPath);
       } else {
         await fs.copyFile(srcPath, destPath);
       }
     }
-    
+
     console.log(`✓ Copied directory: ${source} → ${dest}`);
     return `Successfully copied ${source} to ${dest}`;
-    
+
   } catch (error) {
     return `Error copying directory: ${(error as Error).message}`;
   }
@@ -574,11 +574,11 @@ async function copyDirectory(
 
 ```typescript
 async function moveFile(
-  source: string, 
+  source: string,
   dest: string
 ): Promise<string> {
   try {
-    // fs.rename funziona per move
+    // fs.rename works for move
     await fs.rename(source, dest);
     console.log(`✓ Moved: ${source} → ${dest}`);
     return `Successfully moved ${source} to ${dest}`;
@@ -590,13 +590,13 @@ async function moveFile(
 
 ---
 
-## 🔐 Operazione 8: PERMISSIONS (Avanzato)
+## 🔐 Operation 8: PERMISSIONS (Advanced)
 
 ### Chmod (Change Mode)
 
 ```typescript
 async function changePermissions(
-  filePath: string, 
+  filePath: string,
   mode: string
 ): Promise<string> {
   try {
@@ -610,7 +610,7 @@ async function changePermissions(
 }
 ```
 
-### Esempio: Make Executable
+### Example: Make Executable
 
 ```typescript
 async function makeExecutable(filePath: string): Promise<string> {
@@ -627,12 +627,12 @@ async function makeExecutable(filePath: string): Promise<string> {
 
 ---
 
-## 🛡️ Best Practices per Filesystem Operations
+## 🛡️ Best Practices for Filesystem Operations
 
-### 1. Sempre Usare Path.join()
+### 1. Always Use Path.join()
 
 ```typescript
-// ❌ BAD - Problemi su Windows vs Unix
+// ❌ BAD - Problems on Windows vs Unix
 const filePath = dirPath + "/" + fileName;
 
 // ✅ GOOD - Cross-platform
@@ -648,11 +648,11 @@ import * as path from "path";
 // User input: "../../../etc/passwd" (path traversal attack!)
 const userPath = "../../../etc/passwd";
 
-// ✅ Normalize e valida
+// ✅ Normalize and validate
 const safePath = path.normalize(userPath);
 const absolutePath = path.resolve(safePath);
 
-// Check che sia dentro la working directory
+// Check that it's inside the working directory
 const cwd = process.cwd();
 if (!absolutePath.startsWith(cwd)) {
   throw new Error("Path traversal detected!");
@@ -666,36 +666,36 @@ async function readFile(filePath: string): Promise<string> {
   try {
     // 1. Check access
     await fs.access(filePath, fs.constants.R_OK);
-    
-    // 2. Check che sia un file
+
+    // 2. Check that it's a file
     const stats = await fs.stat(filePath);
     if (!stats.isFile()) {
       return `Error: ${filePath} is not a file`;
     }
-    
-    // 3. Check dimensione (evita file giganti)
+
+    // 3. Check size (avoid giant files)
     if (stats.size > 10 * 1024 * 1024) {  // 10MB
       return `Error: File too large (${stats.size} bytes)`;
     }
-    
+
     // 4. Read
     const content = await fs.readFile(filePath, "utf-8");
     return content;
-    
+
   } catch (error) {
     return `Error: ${(error as Error).message}`;
   }
 }
 ```
 
-### 4. Use Streams per File Grandi
+### 4. Use Streams for Large Files
 
 ```typescript
 import { createReadStream, createWriteStream } from "fs";
 import { pipeline } from "stream/promises";
 
 async function copyLargeFile(source: string, dest: string): Promise<void> {
-  // Stream è memory-efficient per file grandi
+  // Stream is memory-efficient for large files
   await pipeline(
     createReadStream(source),
     createWriteStream(dest)
@@ -705,7 +705,7 @@ async function copyLargeFile(source: string, dest: string): Promise<void> {
 
 ---
 
-## 🎯 Filesystem Tool Complete Example
+## 🎯 Complete Filesystem Tool Example
 
 ```typescript
 import * as fs from "fs/promises";
@@ -747,30 +747,30 @@ async function fileSystem(
 ): Promise<string> {
   // Normalize path
   const safePath = path.normalize(filePath);
-  
+
   // Security check
   const cwd = process.cwd();
   const absolutePath = path.resolve(safePath);
   if (!absolutePath.startsWith(cwd)) {
     return "Error: Path outside working directory";
   }
-  
+
   try {
     switch (operation) {
       case "read":
         return await fs.readFile(safePath, "utf-8");
-        
+
       case "write":
         if (!content) return "Error: content required for write";
         await fs.writeFile(safePath, content, "utf-8");
         return `Wrote ${content.length} bytes to ${safePath}`;
-        
+
       case "list":
         const files = await fs.readdir(safePath, { withFileTypes: true });
-        return files.map(f => 
+        return files.map(f =>
           `${f.isDirectory() ? "📁" : "📄"} ${f.name}`
         ).join("\n");
-        
+
       case "delete":
         const stats = await fs.stat(safePath);
         if (stats.isDirectory()) {
@@ -779,25 +779,25 @@ async function fileSystem(
           await fs.unlink(safePath);
         }
         return `Deleted ${safePath}`;
-        
+
       case "copy":
         if (!dest) return "Error: dest required for copy";
         await fs.copyFile(safePath, dest);
         return `Copied ${safePath} to ${dest}`;
-        
+
       case "move":
         if (!dest) return "Error: dest required for move";
         await fs.rename(safePath, dest);
         return `Moved ${safePath} to ${dest}`;
-        
+
       case "mkdir":
         await fs.mkdir(safePath, { recursive: true });
         return `Created directory ${safePath}`;
-        
+
       case "stat":
         const stat = await fs.stat(safePath);
         return `Size: ${stat.size} bytes, Modified: ${stat.mtime}`;
-        
+
       default:
         return `Unknown operation: ${operation}`;
     }
@@ -813,70 +813,70 @@ async function fileSystem(
 
 ```bash
 # Test 1: Read
-npx ts-node agent.ts "Leggi package.json"
+npx ts-node agent.ts "Read package.json"
 
 # Test 2: Write
-npx ts-node agent.ts "Crea test.txt con 'hello world'"
+npx ts-node agent.ts "Create test.txt with 'hello world'"
 
 # Test 3: List
-npx ts-node agent.ts "Lista tutti i file nella directory corrente"
+npx ts-node agent.ts "List all files in the current directory"
 
 # Test 4: Stat
-npx ts-node agent.ts "Dammi info su agent.ts"
+npx ts-node agent.ts "Give me info on agent.ts"
 
 # Test 5: Copy
-npx ts-node agent.ts "Copia agent.ts in agent.backup.ts"
+npx ts-node agent.ts "Copy agent.ts to agent.backup.ts"
 
 # Test 6: Move
-npx ts-node agent.ts "Rinomina test.txt in test-renamed.txt"
+npx ts-node agent.ts "Rename test.txt to test-renamed.txt"
 
 # Test 7: Delete
-npx ts-node agent.ts "Elimina test-renamed.txt"
+npx ts-node agent.ts "Delete test-renamed.txt"
 
 # Test 8: Mkdir
-npx ts-node agent.ts "Crea directory tmp/test/deep"
+npx ts-node agent.ts "Create directory tmp/test/deep"
 ```
 
 ---
 
 ## 📊 Filesystem API Quick Reference
 
-| Operazione | API | Uso |
-|------------|-----|-----|
-| Read file | `fs.readFile(path, encoding)` | Leggi contenuto |
-| Write file | `fs.writeFile(path, data)` | Scrivi/sovrascrivi |
-| Append | `fs.appendFile(path, data)` | Aggiungi a fine file |
-| List dir | `fs.readdir(path, options)` | Elenca contenuti |
-| File info | `fs.stat(path)` | Ottieni metadata |
-| Check exist | `fs.access(path)` | Verifica esistenza |
-| Delete file | `fs.unlink(path)` | Elimina file |
-| Delete dir | `fs.rm(path, {recursive})` | Elimina directory |
-| Copy | `fs.copyFile(src, dest)` | Copia file |
-| Move/Rename | `fs.rename(old, new)` | Sposta/rinomina |
-| Make dir | `fs.mkdir(path, {recursive})` | Crea directory |
-| Change perms | `fs.chmod(path, mode)` | Modifica permessi |
+| Operation | API | Use |
+|-----------|-----|-----|
+| Read file | `fs.readFile(path, encoding)` | Read content |
+| Write file | `fs.writeFile(path, data)` | Write/overwrite |
+| Append | `fs.appendFile(path, data)` | Add to end of file |
+| List dir | `fs.readdir(path, options)` | List contents |
+| File info | `fs.stat(path)` | Get metadata |
+| Check exist | `fs.access(path)` | Verify existence |
+| Delete file | `fs.unlink(path)` | Delete file |
+| Delete dir | `fs.rm(path, {recursive})` | Delete directory |
+| Copy | `fs.copyFile(src, dest)` | Copy file |
+| Move/Rename | `fs.rename(old, new)` | Move/rename |
+| Make dir | `fs.mkdir(path, {recursive})` | Create directory |
+| Change perms | `fs.chmod(path, mode)` | Modify permissions |
 
 ---
 
 ## 💡 Pro Tips
 
-1. **Usa path.join()**: Sempre per cross-platform compatibility
-2. **Validate paths**: Previeni path traversal attacks
+1. **Use path.join()**: Always for cross-platform compatibility
+2. **Validate paths**: Prevent path traversal attacks
 3. **Check before operations**: access, stat, size checks
 4. **Handle all errors**: ENOENT, EACCES, EISDIR, etc
-5. **Log operations**: Aiuta debugging
-6. **Use streams**: Per file > 10MB
+5. **Log operations**: Helps debugging
+6. **Use streams**: For files > 10MB
 7. **Atomic operations**: Write to temp, then rename
-8. **Backup critical files**: Prima di delete/overwrite
+8. **Backup critical files**: Before delete/overwrite
 
 ---
 
-## 🎓 Esercizio Pratico
+## 🎓 Practical Exercise
 
-Implementa un tool completo `workspace_manager`:
+Implement a complete `workspace_manager` tool:
 
 ```typescript
-// Features da implementare:
+// Features to implement:
 // 1. Create project structure
 // 2. Safe file operations with backup
 // 3. Search files by pattern
@@ -885,10 +885,10 @@ Implementa un tool completo `workspace_manager`:
 
 const workspaceManagerTool: Tool = {
   name: "workspace_manager",
-  // La tua implementazione qui!
+  // Your implementation here!
 };
 ```
 
 ---
 
-**Remember**: Il file system è il foundation di ogni coding agent. Padroneggiare queste operations ti permette di costruire agent che possono veramente manipolare progetti! 📁✨
+**Remember**: The file system is the foundation of every coding agent. Mastering these operations allows you to build agents that can truly manipulate projects! 📁✨

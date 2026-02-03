@@ -1,188 +1,188 @@
-# 📚 Il Tuo Primo Agent - Indice Completo
+# 📚 Your First Agent - Complete Index
 
-Benvenuto al tuo primo coding agent costruito seguendo **Geoffrey Huntley**! 🎉
+Welcome to your first coding agent built following **Geoffrey Huntley**! 🎉
 
 ---
 
 ## 🚀 Start Here
 
-### 1️⃣ Prima di Tutto
-📄 **[QUICKSTART.md](QUICKSTART.md)** - Fai partire l'agent in 5 minuti
+### 1️⃣ First Things First
+📄 **[QUICKSTART.md](QUICKSTART.md)** - Get the agent running in 5 minutes
 
 ### 2️⃣ Setup
-📄 **[README.md](README.md)** - Documentazione completa del progetto
-🔧 **[setup.sh](setup.sh)** - Script automatico di setup
+📄 **[README.md](README.md)** - Complete project documentation
+🔧 **[setup.sh](setup.sh)** - Automatic setup script
 
-### 3️⃣ Impara
-📄 **[ARCHITECTURE.md](ARCHITECTURE.md)** - Come funziona il loop agentico
-🧪 **[EXAMPLES.md](EXAMPLES.md)** - Test ed esempi pratici
+### 3️⃣ Learn
+📄 **[ARCHITECTURE.md](ARCHITECTURE.md)** - How the agentic loop works
+🧪 **[EXAMPLES.md](EXAMPLES.md)** - Tests and practical examples
 
-### 4️⃣ Traccia il Tuo Progresso
-📓 **[LEARNING-JOURNAL.md](LEARNING-JOURNAL.md)** - Template per il tuo journey
+### 4️⃣ Track Your Progress
+📓 **[LEARNING-JOURNAL.md](LEARNING-JOURNAL.md)** - Template for your journey
 
-### 5️⃣ Pubblica su GitHub
-📦 **[GITHUB-SETUP.md](GITHUB-SETUP.md)** - Guida completa per pubblicare il progetto
-🔒 **[.gitignore](.gitignore)** - Protezione file sensibili
+### 5️⃣ Publish on GitHub
+📦 **[GITHUB-SETUP.md](GITHUB-SETUP.md)** - Complete guide for publishing the project
+🔒 **[.gitignore](.gitignore)** - Sensitive file protection
 📄 **[LICENSE](LICENSE)** - MIT License
 
 ---
 
-## 📁 File Principali
+## 📁 Main Files
 
-### Codice
+### Code
 ```
-agent.ts              → Il cuore dell'agent (300 linee!)
-package.json          → Dipendenze
-tsconfig.json         → Config TypeScript
-.env.example          → Template per API key
+agent.ts              → The heart of the agent (300 lines!)
+package.json          → Dependencies
+tsconfig.json         → TypeScript config
+.env.example          → Template for API key
 ```
 
-### Documentazione
+### Documentation
 ```
-README.md             → Overview e guida principale
-QUICKSTART.md         → Quick start in 5 minuti
-ARCHITECTURE.md       → Architettura e internals
-EXAMPLES.md           → Test cases e esempi
-LEARNING-JOURNAL.md   → Journal per tracking
-TROUBLESHOOTING.md    → Soluzioni problemi comuni
+README.md             → Overview and main guide
+QUICKSTART.md         → Quick start in 5 minutes
+ARCHITECTURE.md       → Architecture and internals
+EXAMPLES.md           → Test cases and examples
+LEARNING-JOURNAL.md   → Journal for tracking
+TROUBLESHOOTING.md    → Common problem solutions
 ```
 
 ### GitHub
 ```
-.gitignore            → Protezione file sensibili
-GITHUB-SETUP.md       → Guida pubblicazione GitHub
+.gitignore            → Sensitive file protection
+GITHUB-SETUP.md       → GitHub publishing guide
 LICENSE               → MIT License
 ```
 
 ---
 
-## 🎯 Percorso di Apprendimento Consigliato
+## 🎯 Recommended Learning Path
 
-### Giorno 1 - Setup & Primi Test
-1. ✅ Leggi **QUICKSTART.md**
-2. ✅ Esegui `./setup.sh`
-3. ✅ Prova 3-5 esempi da **EXAMPLES.md**
-4. ✅ Compila prima entry in **LEARNING-JOURNAL.md**
+### Day 1 - Setup & First Tests
+1. ✅ Read **QUICKSTART.md**
+2. ✅ Run `./setup.sh`
+3. ✅ Try 3-5 examples from **EXAMPLES.md**
+4. ✅ Write first entry in **LEARNING-JOURNAL.md**
 
-### Giorno 2 - Deep Dive
-1. ✅ Leggi **ARCHITECTURE.md** completo
-2. ✅ Analizza `agent.ts` riga per riga
-3. ✅ Sperimenta modificando tool descriptions
-4. ✅ Prova task complessi da **EXAMPLES.md**
+### Day 2 - Deep Dive
+1. ✅ Read complete **ARCHITECTURE.md**
+2. ✅ Analyze `agent.ts` line by line
+3. ✅ Experiment by modifying tool descriptions
+4. ✅ Try complex tasks from **EXAMPLES.md**
 
-### Giorno 3 - Customization
-1. ✅ Modifica un tool esistente
-2. ✅ Aggiungi logging custom
-3. ✅ Crea test per il tuo workflow Effectual
-4. ✅ Documenta insights nel journal
+### Day 3 - Customization
+1. ✅ Modify an existing tool
+2. ✅ Add custom logging
+3. ✅ Create a test for your Effectful workflow
+4. ✅ Document insights in the journal
 
-### Giorno 4+ - Build
-1. ✅ Aggiungi 5° tool (search)
-2. ✅ Integra MCP server
-3. ✅ Build agent per use case specifico
-4. ✅ Share con Michael/team
+### Day 4+ - Build
+1. ✅ Add 5th tool (search)
+2. ✅ Integrate MCP server
+3. ✅ Build agent for specific use case
+4. ✅ Share with Michael/team
 
 ---
 
-## 🔑 Concetti Chiave da Capire
+## 🔑 Key Concepts to Understand
 
-### Il Loop (da ARCHITECTURE.md)
+### The Loop (from ARCHITECTURE.md)
 ```
 while (true) {
-  1. Invia messaggio a Claude
-  2. Claude decide tool da usare
-  3. Esegui tool
-  4. Aggiungi risultato al context
-  5. Loop o esci
+  1. Send message to Claude
+  2. Claude decides tool to use
+  3. Execute tool
+  4. Add result to context
+  5. Loop or exit
 }
 ```
 
-### I 4 Primitivi (da README.md)
-1. **read_file** - Leggi contenuti
-2. **list_files** - Esplora directory
-3. **bash** - Esegui comandi
-4. **edit_file** - Modifica/crea file
+### The 4 Primitives (from README.md)
+1. **read_file** - Read contents
+2. **list_files** - Explore directories
+3. **bash** - Execute commands
+4. **edit_file** - Modify/create files
 
 ### Geoffrey's Wisdom
-> "300 linee di codice in un loop con LLM tokens"
+> "300 lines of code in a loop with LLM tokens"
 
 ---
 
-## 🧪 Quick Tests da Provare Subito
+## 🧪 Quick Tests to Try Right Now
 
 ```bash
-# Test 1: Lista file
-npx ts-node agent.ts "Lista tutti i file TypeScript"
+# Test 1: List files
+npx ts-node agent.ts "List all TypeScript files"
 
-# Test 2: Leggi e analizza
-npx ts-node agent.ts "Leggi agent.ts e dimmi quante funzioni ci sono"
+# Test 2: Read and analyze
+npx ts-node agent.ts "Read agent.ts and tell me how many functions there are"
 
-# Test 3: FizzBuzz (classico!)
-npx ts-node agent.ts "Crea fizzbuzz.ts ed eseguilo"
+# Test 3: FizzBuzz (classic!)
+npx ts-node agent.ts "Create fizzbuzz.ts and run it"
 
 # Test 4: Multi-step
-npx ts-node agent.ts "Crea hello.txt, scrivici 'test', leggilo, poi cancellalo"
+npx ts-node agent.ts "Create hello.txt, write 'test' in it, read it, then delete it"
 ```
 
 ---
 
-## 📊 Checklist di Padronanza
+## 📊 Mastery Checklist
 
-### Livello 1: Beginner ⭐
-- [ ] Ho fatto girare l'agent con successo
-- [ ] Ho provato tutti i 4 tool individualmente
-- [ ] Capisco cosa fa il loop base
-- [ ] Ho completato 5 test da EXAMPLES.md
+### Level 1: Beginner ⭐
+- [ ] I successfully ran the agent
+- [ ] I tried all 4 tools individually
+- [ ] I understand what the basic loop does
+- [ ] I completed 5 tests from EXAMPLES.md
 
-### Livello 2: Intermediate ⭐⭐
-- [ ] Capisco il flow completo in ARCHITECTURE.md
-- [ ] So quando Claude usa quale tool
-- [ ] Ho modificato un tool description
-- [ ] Ho creato un agent task per mio use case
+### Level 2: Intermediate ⭐⭐
+- [ ] I understand the complete flow in ARCHITECTURE.md
+- [ ] I know when Claude uses which tool
+- [ ] I modified a tool description
+- [ ] I created an agent task for my use case
 
-### Livello 3: Advanced ⭐⭐⭐
-- [ ] Ho aggiunto un nuovo tool custom
-- [ ] Capisco context window management
-- [ ] Ho integrato MCP server
-- [ ] Ho costruito agent per workflow Effectual
+### Level 3: Advanced ⭐⭐⭐
+- [ ] I added a new custom tool
+- [ ] I understand context window management
+- [ ] I integrated an MCP server
+- [ ] I built an agent for Effectful workflow
 
-### Livello 4: Expert ⭐⭐⭐⭐
-- [ ] Ho modificato il loop principale
-- [ ] Ho implementato error recovery avanzato
-- [ ] Ho creato multi-agent orchestration
-- [ ] Posso spiegare il tutto a un collega
+### Level 4: Expert ⭐⭐⭐⭐
+- [ ] I modified the main loop
+- [ ] I implemented advanced error recovery
+- [ ] I created multi-agent orchestration
+- [ ] I can explain everything to a colleague
 
 ---
 
-## 🎓 Connessioni con Effectual
+## 🎓 Connections with Effectful
 
-### Use Cases Potenziali
-1. **Blog Automation** - Agent per "This Week In Effect"
+### Potential Use Cases
+1. **Blog Automation** - Agent for "This Week In Effect"
 2. **YouTube Workflows** - Processing video metadata
 3. **Podcast Editing** - Automation tasks
 4. **Effect-TS Projects** - Code generation helpers
 
-Vedi **LEARNING-JOURNAL.md** per tracciare queste idee!
+See **LEARNING-JOURNAL.md** to track these ideas!
 
 ---
 
 ## 🆘 Help & Troubleshooting
 
-### Problemi Comuni
-1. **API Key Issues** → Controlla `.env` e export
-2. **Tool Fails** → Leggi error message, check path
-3. **Loop Infinito** → Verifica stop_reason logic
-4. **Bad Results** → Troppo context? Semplifica task
+### Common Problems
+1. **API Key Issues** → Check `.env` and export
+2. **Tool Fails** → Read error message, check path
+3. **Infinite Loop** → Verify stop_reason logic
+4. **Bad Results** → Too much context? Simplify task
 
-### Dove Cercare Aiuto
-- **ARCHITECTURE.md** → Capire internals
-- **EXAMPLES.md** → Vedere working examples  
-- **README.md** → Setup e config
-- **Geoffrey's Blog** → Insights profondi
+### Where to Look for Help
+- **ARCHITECTURE.md** → Understand internals
+- **EXAMPLES.md** → See working examples
+- **README.md** → Setup and config
+- **Geoffrey's Blog** → Deep insights
 
 ---
 
-## 📚 Risorse Esterne
+## 📚 External Resources
 
 ### Geoffrey Huntley's Material
 - 🔗 [Agent Workshop](https://ghuntley.com/agent/)
@@ -195,15 +195,15 @@ Vedi **LEARNING-JOURNAL.md** per tracciare queste idee!
 
 ---
 
-## 🎯 Il Tuo Obiettivo
+## 🎯 Your Goal
 
-**Da Editor a Technical Contributor** in 8 settimane.
+**From Editor to Technical Contributor** in 8 weeks.
 
-Questo agent è:
-- ✅ Primo progetto tecnico completo
-- ✅ Fondazione per AI-backed development
-- ✅ Dimostrazione di capacità a Michael
-- ✅ Stepping stone verso hybrid role
+This agent is:
+- ✅ First complete technical project
+- ✅ Foundation for AI-backed development
+- ✅ Demonstration of capabilities to Michael
+- ✅ Stepping stone toward hybrid role
 
 ---
 
@@ -212,7 +212,7 @@ Questo agent è:
 > "Go forward and build."
 > — Geoffrey Huntley
 
-Hai tutto quello che ti serve:
+You have everything you need:
 - ✅ Working agent code
 - ✅ Comprehensive docs
 - ✅ Learning framework
@@ -237,8 +237,8 @@ Hai tutto quello che ti serve:
 
 ---
 
-**Fatto da Davide per il programma Effectual "Da Editor a Technical Contributor"** 
+**Made by Davide for the Effectful "From Editor to Technical Contributor" program**
 
-*Seguendo Geoffrey Huntley's metodologia - Gennaio 2026*
+*Following Geoffrey Huntley's methodology - January 2026*
 
 🎉 **Happy Building!** 🎉

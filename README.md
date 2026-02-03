@@ -1,79 +1,79 @@
-# 🤖 Il Mio Primo Agent - Davide's Coding Agent
+# 🤖 My First Agent - Davide's Coding Agent
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 ![Anthropic](https://img.shields.io/badge/Anthropic-Claude-orange?style=for-the-badge)
 
-Agent TypeScript costruito seguendo la metodologia di Geoffrey Huntley.
+A TypeScript agent built following Geoffrey Huntley's methodology.
 
-## 🎯 Filosofia
+## 🎯 Philosophy
 
-Come dice Geoffrey:
-> "300 linee di codice in un loop con LLM tokens. È davvero così semplice."
+As Geoffrey says:
+> "300 lines of code in a loop with LLM tokens. It really is that simple."
 
-Questo agent implementa i **5 primitivi fondamentali** di ogni coding agent professionale:
+This agent implements the **5 fundamental primitives** of every professional coding agent:
 
-1. **📖 Read Tool** - Legge file
-2. **📁 List Tool** - Elenca directory
-3. **⚙️ Bash Tool** - Esegue comandi
-4. **✏️ Edit Tool** - Modifica/crea file
-5. **🔍 Code Search Tool** - Cerca pattern nel codice (ripgrep)
+1. **📖 Read Tool** - Reads files
+2. **📁 List Tool** - Lists directories
+3. **⚙️ Bash Tool** - Executes commands
+4. **✏️ Edit Tool** - Modifies/creates files
+5. **🔍 Code Search Tool** - Searches patterns in code (ripgrep)
 
 ## 🚀 Setup
 
 ```bash
-# Installa le dipendenze
+# Install dependencies
 npm install
 
-# Configura la tua API key
+# Configure your API key
 export ANTHROPIC_API_KEY='your-key-here'
 ```
 
-## 💡 Come usarlo
+## 💡 How to Use
 
 ```bash
-# Esempio 1: Lista file
-npx ts-node agent.ts "Elenca tutti i file TypeScript in questa directory"
+# Example 1: List files
+npx ts-node agent.ts "List all TypeScript files in this directory"
 
-# Esempio 2: Crea un file
-npx ts-node agent.ts "Crea un file chiamato test.txt con il contenuto 'Hello World'"
+# Example 2: Create a file
+npx ts-node agent.ts "Create a file called test.txt with the content 'Hello World'"
 
-# Esempio 3: FizzBuzz (come nell'esempio di Geoffrey)
-npx ts-node agent.ts "Crea fizzbuzz.ts che stampa fizzbuzz fino a 20 ed eseguilo"
+# Example 3: FizzBuzz (as in Geoffrey's example)
+npx ts-node agent.ts "Create fizzbuzz.ts that prints fizzbuzz up to 20 and run it"
 
-# Esempio 4: Analisi codice
-npx ts-node agent.ts "Leggi agent.ts e dimmi quante funzioni ci sono"
+# Example 4: Code analysis
+npx ts-node agent.ts "Read agent.ts and tell me how many functions are there"
 
-# Esempio 5: Code Search (nuovo!)
-npx ts-node agent.ts "Cerca tutte le funzioni async nel progetto"
+# Example 5: Code Search (new!)
+npx ts-node agent.ts "Search for all async functions in the project"
 
-# Esempio 6: Find TODOs
-npx ts-node agent.ts "Trova tutti i TODO e FIXME nel codice"
+# Example 6: Find TODOs
+npx ts-node agent.ts "Find all TODOs and FIXMEs in the code"
 ```
 
-**Nota**: Usa `npx ts-node` invece di solo `ts-node` se non hai installato ts-node globalmente.
+**Note**: Use `npx ts-node` instead of just `ts-node` if you don't have ts-node installed globally.
 
-## 🧠 Come funziona
+## 🧠 How It Works
 
-L'agent è costruito su un **loop semplice**:
+The agent is built on a **simple loop**:
 
 ```typescript
 while (true) {
-  1. Invia messaggio a Claude
-  2. Claude decide se usare tools
-  3. Se usa tools → esegui e ritorna risultati
-  4. Se finito → mostra risposta finale
+  1. Send message to Claude
+  2. Claude decides whether to use tools
+  3. If uses tools → execute and return results
+  4. If finished → show final response
 }
 ```
 
-### Il Loop Agentico
+### The Agentic Loop
 
 ```
 User Input
     ↓
 [Claude Inference]
     ↓
-Tool Call? 
+Tool Call?
     ↓ YES          ↓ NO
 Execute Tool   End Turn
     ↓              ↓
@@ -82,49 +82,49 @@ Add Result    Show Response
 [Loop Back]
 ```
 
-## 🛠️ I 5 Primitivi
+## 🛠️ The 5 Primitives
 
 ### 1. Read File Tool
 ```typescript
 await readFile("myfile.txt")
 ```
-Legge il contenuto di un file.
+Reads the content of a file.
 
 ### 2. List Files Tool
 ```typescript
 await listFiles("./src")
 ```
-Elenca file e directory.
+Lists files and directories.
 
 ### 3. Bash Tool
 ```typescript
 await runBash("ls -la")
 ```
-Esegue comandi shell.
+Executes shell commands.
 
 ### 4. Edit File Tool
 ```typescript
-await editFile("test.txt", "", "nuovo contenuto")
+await editFile("test.txt", "", "new content")
 ```
-Crea o modifica file.
+Creates or modifies files.
 
 ### 5. Code Search Tool
 ```typescript
 await codeSearch({ pattern: "async function", file_type: "ts" })
 ```
-Cerca pattern nel codice usando ripgrep. Il 5° primitivo secondo Geoffrey:
+Searches patterns in code using ripgrep. The 5th primitive according to Geoffrey:
 > "What if I were to tell you that there is no magic for indexing source code? Nearly every coding tool uses ripgrep under the hood."
 
 ## 📚 Documentation
 
-Documentazione completa disponibile:
+Complete documentation available:
 
-- **[QUICKSTART.md](QUICKSTART.md)** - Setup rapido in 5 minuti
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Deep dive nell'architettura dell'agent
-- **[EXAMPLES.md](EXAMPLES.md)** - Test cases ed esempi pratici
-- **[LEARNING-JOURNAL.md](LEARNING-JOURNAL.md)** - Technical progress e insights
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick setup in 5 minutes
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Deep dive into the agent architecture
+- **[EXAMPLES.md](EXAMPLES.md)** - Test cases and practical examples
+- **[LEARNING-JOURNAL.md](LEARNING-JOURNAL.md)** - Technical progress and insights
 
-### Guide Tecniche Approfondite
+### In-Depth Technical Guides
 
 - **[TOOL-DEFINITIONS-GUIDE.md](TOOL-DEFINITIONS-GUIDE.md)** - Tool definition structure
 - **[ERROR-HANDLING-GUIDE.md](ERROR-HANDLING-GUIDE.md)** - Error handling patterns
@@ -133,49 +133,49 @@ Documentazione completa disponibile:
 
 ### Setup & Troubleshooting
 
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Soluzioni ai problemi comuni
-- **[GITHUB-SETUP.md](GITHUB-SETUP.md)** - Guida per pubblicare su GitHub
-- **[GIT-CHEATSHEET.md](GIT-CHEATSHEET.md)** - Comandi Git essenziali
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Solutions to common problems
+- **[GITHUB-SETUP.md](GITHUB-SETUP.md)** - Guide to publishing on GitHub
+- **[GIT-CHEATSHEET.md](GIT-CHEATSHEET.md)** - Essential Git commands
 
-## 🎓 Lezioni Chiave da Geoffrey
+## 🎓 Key Lessons from Geoffrey
 
-### Non tutti gli LLM sono agentici
-- **Agentic** (Claude Sonnet): "scoiattolo digitale" che vuole fare tool calls
-- **Oracle** (GPT-4): pensiero profondo, summarization
+### Not All LLMs Are Agentic
+- **Agentic** (Claude Sonnet): "digital squirrel" that wants to make tool calls
+- **Oracle** (GPT-4): deep thinking, summarization
 - **High Safety**: Anthropic, OpenAI
 - **Low Safety**: Grok
 
 ### Context Window Management
 > "Less is more, folks. Less is more."
 
-- Context window è come un Commodore 64
-- Più allochi, peggiori sono i risultati
-- Usa **una sola attività per context window**
+- Context window is like a Commodore 64
+- The more you allocate, the worse the results
+- Use **one task per context window**
 
-### Il Loop è Tutto
-300 linee di codice che girano in loop con LLM tokens. Non c'è magia!
+### The Loop Is Everything
+300 lines of code running in a loop with LLM tokens. There's no magic!
 
-## 📊 Struttura del Progetto
+## 📊 Project Structure
 
 ```
 .
-├── agent.ts           # Il cuore dell'agent
-├── package.json       # Dipendenze
-├── tsconfig.json      # Config TypeScript
-└── README.md         # Questa guida
+├── agent.ts           # The heart of the agent
+├── package.json       # Dependencies
+├── tsconfig.json      # TypeScript config
+└── README.md         # This guide
 ```
 
-## 🔮 Prossimi Passi
+## 🔮 Next Steps
 
-Una volta che padroneggi questi 5 primitivi, puoi:
+Once you master these 5 primitives, you can:
 
-1. ✅ ~~Aggiungere un **Search Tool** (ripgrep)~~ - Completato!
-2. Implementare **MCP servers** per estendere le capabilities
-3. Creare agent specializzati per workflow specifici
-4. Costruire orchestrazioni multi-agent
-5. Aggiungere caching e ottimizzazioni performance
+1. ✅ ~~Add a **Search Tool** (ripgrep)~~ - Completed!
+2. Implement **MCP servers** to extend capabilities
+3. Create specialized agents for specific workflows
+4. Build multi-agent orchestrations
+5. Add caching and performance optimizations
 
-## 💭 Citazioni Chiave
+## 💭 Key Quotes
 
 > "Any disruption or job loss related to AI is not a result of AI itself, but rather a consequence of a lack of personal development."
 > — Geoffrey Huntley
@@ -183,25 +183,25 @@ Una volta che padroneggi questi 5 primitivi, puoi:
 > "In 2025, you should be familiar with what a primary key is and how to create an agent."
 > — Geoffrey Huntley
 
-## 📚 Risorse
+## 📚 Resources
 
 ### Geoffrey Huntley's Materials
-- [Agent Workshop](https://ghuntley.com/agent/) - Workshop completo su come costruire agent
-- [Workshop Materials (Go)](https://github.com/ghuntley/how-to-build-a-coding-agent) - Implementazione in Go
-- [6-Month Recap](https://ghuntley.com/six-month-recap/) - Insights sul futuro degli agent
+- [Agent Workshop](https://ghuntley.com/agent/) - Complete workshop on how to build agents
+- [Workshop Materials (Go)](https://github.com/ghuntley/how-to-build-a-coding-agent) - Go implementation
+- [6-Month Recap](https://ghuntley.com/six-month-recap/) - Insights on the future of agents
 
 ### Anthropic Documentation
-- [Anthropic SDK Docs](https://docs.anthropic.com) - Documentazione ufficiale
-- [Tool Use Guide](https://docs.anthropic.com/en/docs/tool-use) - Come usare i tool
+- [Anthropic SDK Docs](https://docs.anthropic.com) - Official documentation
+- [Tool Use Guide](https://docs.anthropic.com/en/docs/tool-use) - How to use tools
 
 ### Technical References
-- [ripgrep](https://github.com/BurntSushi/ripgrep) - Il tool di code search che tutti usano
+- [ripgrep](https://github.com/BurntSushi/ripgrep) - The code search tool everyone uses
 - [Node.js fs/promises](https://nodejs.org/api/fs.html#promises-api) - Filesystem operations
 
 ## ✨ Credits
 
-Agent costruito da **Davide** nel contesto del programma "Da Editor a Technical Contributor" per Effectful Technologies, seguendo gli insegnamenti di Geoffrey Huntley.
+Agent built by **Davide** in the context of the "From Editor to Technical Contributor" program for Effectful Technologies, following the teachings of Geoffrey Huntley.
 
 ---
 
-**Remember**: Questo è solo l'inizio. Come dice Geoffrey: "Go forward and build." 🚀
+**Remember**: This is just the beginning. As Geoffrey says: "Go forward and build." 🚀

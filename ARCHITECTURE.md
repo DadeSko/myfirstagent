@@ -1,10 +1,10 @@
-# 🏗️ Architettura dell'Agent
+# 🏗️ Agent Architecture
 
 ## Overview
 
-Questo agent segue l'architettura descritta da Geoffrey Huntley: **"300 linee di codice in un loop con LLM tokens"**.
+This agent follows the architecture described by Geoffrey Huntley: **"300 lines of code in a loop with LLM tokens"**.
 
-## Componenti Principali
+## Main Components
 
 ```
 ┌─────────────────────────────────────────┐
@@ -38,25 +38,25 @@ Questo agent segue l'architettura descritta da Geoffrey Huntley: **"300 linee di
 └─────────────────────────────────────────┘
 ```
 
-## Il Loop Agentico in Dettaglio
+## The Agentic Loop in Detail
 
-### Fase 1: Inizializzazione
+### Phase 1: Initialization
 
 ```typescript
 const messages = [{ role: "user", content: userMessage }];
 const tools = [readFileTool, listFilesTool, bashTool, editFileTool];
 ```
 
-L'agent parte con:
-- Il messaggio dell'utente
-- La definizione dei 4 tool disponibili
+The agent starts with:
+- The user's message
+- The definition of the 4 available tools
 
-### Fase 2: Inferencing Loop
+### Phase 2: Inferencing Loop
 
 ```typescript
 while (true) {
   const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514", // Il "digital squirrel"
+    model: "claude-sonnet-4-20250514", // The "digital squirrel"
     max_tokens: 4096,
     tools: tools,
     messages: messages,
@@ -65,37 +65,37 @@ while (true) {
 }
 ```
 
-**Perché Claude Sonnet?**
-- È "agentic" → biased verso action
-- Vuole fare tool calls (come uno scoiattolo insegue noci)
-- Non perde tempo a pensare → agisce incrementalmente
+**Why Claude Sonnet?**
+- It's "agentic" → biased toward action
+- It wants to make tool calls (like a squirrel chasing nuts)
+- Doesn't waste time thinking → acts incrementally
 
-### Fase 3: Decision Making
+### Phase 3: Decision Making
 
 ```typescript
 if (response.stop_reason === "end_turn") {
-  // Finito! Mostra risposta e esci
+  // Done! Show response and exit
   break;
 }
 
 if (response.stop_reason === "tool_use") {
-  // Claude vuole usare un tool
-  // → esegui e continua il loop
+  // Claude wants to use a tool
+  // → execute and continue the loop
 }
 ```
 
-**Stop Reasons possibili:**
-- `end_turn`: Claude ha finito, nessun tool necessario
-- `tool_use`: Claude vuole chiamare uno o più tool
-- `max_tokens`: Raggiunto limite token (rare)
+**Possible Stop Reasons:**
+- `end_turn`: Claude is done, no tool needed
+- `tool_use`: Claude wants to call one or more tools
+- `max_tokens`: Reached token limit (rare)
 
-### Fase 4: Tool Execution
+### Phase 4: Tool Execution
 
 ```typescript
 for (const block of response.content) {
   if (block.type === "tool_use") {
     const result = await executeTool(block.name, block.input);
-    
+
     toolResults.push({
       type: "tool_result",
       tool_use_id: block.id,
@@ -105,14 +105,14 @@ for (const block of response.content) {
 }
 ```
 
-**Flow dei Tool:**
-1. Claude decide: "Ho bisogno del tool X"
-2. Fornisce `tool_name` e `input`
-3. Agent esegue la funzione corrispondente
-4. Risultato viene aggiunto ai messages
-5. Loop ricomincia con il nuovo contesto
+**Tool Flow:**
+1. Claude decides: "I need tool X"
+2. Provides `tool_name` and `input`
+3. Agent executes the corresponding function
+4. Result is added to messages
+5. Loop restarts with the new context
 
-### Fase 5: Context Building
+### Phase 5: Context Building
 
 ```typescript
 messages.push({
@@ -126,17 +126,17 @@ messages.push({
 });
 ```
 
-**Importante**: Ogni iterazione costruisce il context window:
+**Important**: Each iteration builds the context window:
 ```
-[User: "Crea fizzbuzz.ts"]
-[Assistant: "Uso edit_file tool"]
+[User: "Create fizzbuzz.ts"]
+[Assistant: "Using edit_file tool"]
 [User: Tool Result: "File created"]
-[Assistant: "Ora lo eseguo con bash"]
+[Assistant: "Now I'll run it with bash"]
 [User: Tool Result: "1 2 Fizz..."]
-[Assistant: "Ecco il risultato!"]
+[Assistant: "Here's the result!"]
 ```
 
-## I 4 Primitivi
+## The 4 Primitives
 
 ### 1. Read File Tool
 
@@ -148,9 +148,9 @@ async function readFile(filePath: string): Promise<string> {
 ```
 
 **Use Cases:**
-- Leggere codice esistente
-- Analizzare contenuti
-- Verificare output
+- Read existing code
+- Analyze contents
+- Verify output
 
 ### 2. List Files Tool
 
@@ -162,9 +162,9 @@ async function listFiles(dirPath: string = "."): Promise<string> {
 ```
 
 **Use Cases:**
-- Esplorare struttura progetto
-- Trovare file specifici
-- Verificare esistenza file
+- Explore project structure
+- Find specific files
+- Verify file existence
 
 ### 3. Bash Tool
 
@@ -176,9 +176,9 @@ async function runBash(command: string): Promise<string> {
 ```
 
 **Use Cases:**
-- Eseguire script
-- Installare dipendenze
-- Testare codice
+- Run scripts
+- Install dependencies
+- Test code
 - Git operations
 
 ### 4. Edit File Tool
@@ -190,10 +190,10 @@ async function editFile(
   newStr: string
 ): Promise<string> {
   if (oldStr === "") {
-    // Crea nuovo file
+    // Create new file
     await fs.writeFile(filePath, newStr, "utf-8");
   } else {
-    // Modifica file esistente
+    // Modify existing file
     const content = await fs.readFile(filePath, "utf-8");
     await fs.writeFile(filePath, content.replace(oldStr, newStr), "utf-8");
   }
@@ -202,24 +202,24 @@ async function editFile(
 ```
 
 **Use Cases:**
-- Creare nuovi file
-- Modificare codice esistente
+- Create new files
+- Modify existing code
 - Refactoring
 
-## Lezioni Chiave dall'Architettura
+## Key Architecture Lessons
 
-### 1. "Less is More" nel Context Window
+### 1. "Less is More" in Context Window
 
 ```typescript
-// ❌ BAD: Alloca troppo
+// ❌ BAD: Allocates too much
 tools: [tool1, tool2, tool3, ..., tool50] // 76k tokens!
 
-// ✅ GOOD: Solo tools necessari
+// ✅ GOOD: Only necessary tools
 tools: [readFile, listFiles, bash, editFile] // ~2k tokens
 ```
 
-**Geoffrey's Rule**: 
-> "Più allochi al context window, peggiori sono i risultati"
+**Geoffrey's Rule**:
+> "The more you allocate to the context window, the worse the results"
 
 ### 2. Tool Descriptions Matter
 
@@ -231,24 +231,24 @@ description: "Reads files"
 description: "Read the contents of a given relative file path. Use this when you want to see what's inside a file. Do not use this with directory names."
 ```
 
-Le description sono **billboards** che nudgano il latent space di Claude.
+Descriptions are **billboards** that nudge Claude's latent space.
 
-### 3. Una Attività per Context Window
+### 3. One Task per Context Window
 
 ```typescript
-// ❌ BAD: Riusa lo stesso agent loop
+// ❌ BAD: Reuses the same agent loop
 agent("Build API") → agent("Research meerkats") → agent("Design UI")
 
-// ✅ GOOD: Nuovo loop per ogni task
+// ✅ GOOD: New loop for each task
 agent("Build API") // Clear context
 agent("Research meerkats") // Fresh start
 agent("Design UI") // Clean slate
 ```
 
-**Perché?** Il context si contamina:
-- API + meerkats → UI con facts sui meerkats nell'API 🤦
+**Why?** The context gets contaminated:
+- API + meerkats → UI with meerkat facts in the API 🤦
 
-## Sequence Diagram Completo
+## Complete Sequence Diagram
 
 ```
 User
@@ -282,27 +282,27 @@ Agent Loop (Iteration 3)
   └─→ Show final response to user
 ```
 
-## Estensioni Future
+## Future Extensions
 
-### 5. Search Tool (Prossimo Step)
+### 5. Search Tool (Next Step)
 ```typescript
 const searchTool: Tool = {
   name: "code_search",
   description: "Search code using ripgrep",
-  // Geoffrey usa ripgrep sotto il cofano!
+  // Geoffrey uses ripgrep under the hood!
 };
 ```
 
 ### 6. MCP Integration
-Puoi aggiungere Model Context Protocol servers:
+You can add Model Context Protocol servers:
 ```typescript
 tools: [...basicTools, ...mcpTools]
 ```
 
-**Attenzione**: Ogni MCP tool alloca context!
+**Warning**: Each MCP tool allocates context!
 
 ### 7. Oracle Pattern
-Wired GPT-4 come tool per "reasoning":
+Wire GPT-4 as a tool for "reasoning":
 ```typescript
 const oracleTool: Tool = {
   name: "oracle",
@@ -314,44 +314,44 @@ const oracleTool: Tool = {
 
 ### Token Usage
 - **System Prompt**: ~500 tokens
-- **Tool Definitions**: ~2k tokens per 4 tools
-- **Conversation History**: Cresce ad ogni iteration
-- **Available**: ~176k tokens su 200k context window
+- **Tool Definitions**: ~2k tokens for 4 tools
+- **Conversation History**: Grows with each iteration
+- **Available**: ~176k tokens on 200k context window
 
 ### Loop Iterations
-- Task semplici: 1-3 iterations
-- Task complessi: 5-10 iterations
+- Simple tasks: 1-3 iterations
+- Complex tasks: 5-10 iterations
 - Multi-step workflows: 10-20 iterations
 
-### Costo per Task
+### Cost per Task
 ```
-Semplice (3 iterations): ~$0.01
-Medio (7 iterations): ~$0.03
-Complesso (15 iterations): ~$0.07
+Simple (3 iterations): ~$0.01
+Medium (7 iterations): ~$0.03
+Complex (15 iterations): ~$0.07
 ```
 
 ## Best Practices
 
-1. **Clear Tool Descriptions**: Aiutano Claude a scegliere giusto
-2. **Error Handling**: Ogni tool deve gestire gli errori
-3. **Logging**: Console.log per debugging
-4. **Context Management**: Una task, un loop
-5. **Tool Efficiency**: Meno tool = migliori risultati
+1. **Clear Tool Descriptions**: Help Claude choose correctly
+2. **Error Handling**: Every tool must handle errors
+3. **Logging**: Console.log for debugging
+4. **Context Management**: One task, one loop
+5. **Tool Efficiency**: Fewer tools = better results
 
-## Conclusione
+## Conclusion
 
-Questa architettura dimostra il principio di Geoffrey:
+This architecture demonstrates Geoffrey's principle:
 
-> "Non c'è magia. Sono solo 300 linee di codice che girano in loop con LLM tokens."
+> "There's no magic. It's just 300 lines of code running in a loop with LLM tokens."
 
-L'intelligenza non è nell'harness (il nostro codice), ma nel **model** (Claude Sonnet) che:
-- Sa quando chiamare tool
-- Sa quali parametri passare
-- Sa quando fermarsi
+The intelligence isn't in the harness (our code), but in the **model** (Claude Sonnet) which:
+- Knows when to call tools
+- Knows which parameters to pass
+- Knows when to stop
 
-Il nostro lavoro è solo:
-1. Definire tool chiari
-2. Eseguirli correttamente
-3. Far girare il loop
+Our job is just to:
+1. Define clear tools
+2. Execute them correctly
+3. Run the loop
 
 **That's it!** 🎯

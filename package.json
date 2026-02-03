@@ -1,7 +1,7 @@
 {
   "name": "davide-first-agent",
   "version": "1.0.0",
-  "description": "Il primo agent di Davide seguendo Geoffrey Huntley's metodologia",
+  "description": "Davide's first agent following Geoffrey Huntley's methodology",
   "main": "agent.ts",
   "scripts": {
     "agent": "ts-node agent.ts",

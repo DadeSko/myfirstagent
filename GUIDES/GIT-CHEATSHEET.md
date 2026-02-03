@@ -1,60 +1,60 @@
-# 🎯 Git Quick Reference - Comandi Essenziali
+# 🎯 Git Quick Reference - Essential Commands
 
-Cheat sheet veloce per gestire il tuo repository GitHub.
+Quick cheat sheet for managing your GitHub repository.
 
 ---
 
-## 🚀 Setup Iniziale (Una Volta Sola)
+## 🚀 Initial Setup (One Time Only)
 
 ```bash
-# Inizializza repository
+# Initialize repository
 git init
 
-# Configura il tuo nome (se non l'hai mai fatto)
-git config --global user.name "Tuo Nome"
-git config --global user.email "tua@email.com"
+# Configure your name (if you haven't already)
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
 
-# Collega al repository GitHub
+# Connect to GitHub repository
 git remote add origin https://github.com/USERNAME/REPO-NAME.git
 
-# Verifica remote
+# Verify remote
 git remote -v
 ```
 
 ---
 
-## 📝 Workflow Quotidiano
+## 📝 Daily Workflow
 
-### 1. Controlla lo Status
+### 1. Check Status
 
 ```bash
-# Vedi cosa è cambiato
+# See what has changed
 git status
 
-# Vedi le differenze nel dettaglio
+# See differences in detail
 git diff
 ```
 
-### 2. Aggiungi Modifiche
+### 2. Add Changes
 
 ```bash
-# Aggiungi tutto
+# Add everything
 git add .
 
-# Aggiungi file specifico
+# Add specific file
 git add agent.ts
 
-# Aggiungi più file
+# Add multiple files
 git add agent.ts README.md
 ```
 
 ### 3. Commit
 
 ```bash
-# Commit con messaggio
+# Commit with message
 git commit -m "✨ Add new feature"
 
-# Commit con messaggio multi-linea
+# Commit with multi-line message
 git commit -m "✨ Add search tool
 
 - Implement ripgrep integration
@@ -62,138 +62,138 @@ git commit -m "✨ Add search tool
 - Update documentation"
 ```
 
-### 4. Push su GitHub
+### 4. Push to GitHub
 
 ```bash
-# Push (dopo il primo push -u)
+# Push (after the first push -u)
 git push
 
-# Primo push (solo la prima volta)
+# First push (only the first time)
 git push -u origin main
 ```
 
 ---
 
-## 🔄 Comandi Comuni
+## 🔄 Common Commands
 
-### Vedere la History
+### View History
 
 ```bash
-# Log semplice
+# Simple log
 git log
 
-# Log compatto (meglio)
+# Compact log (better)
 git log --oneline
 
-# Log con grafo
+# Log with graph
 git log --oneline --graph --all
 
-# Ultimi 5 commit
+# Last 5 commits
 git log --oneline -5
 ```
 
-### Annullare Modifiche
+### Undo Changes
 
 ```bash
-# Scarta modifiche in un file (NON committato)
+# Discard changes in a file (NOT committed)
 git checkout -- agent.ts
 
-# Scarta TUTTE le modifiche (NON committate)
+# Discard ALL changes (NOT committed)
 git checkout .
 
-# Rimuovi file dall'area di staging (ma mantieni modifiche)
+# Remove file from staging area (but keep changes)
 git reset agent.ts
 
-# Torna al commit precedente (ATTENZIONE!)
+# Go back to previous commit (CAUTION!)
 git reset --hard HEAD~1
 ```
 
-### Rimuovere File
+### Remove Files
 
 ```bash
-# Rimuovi file dal repository E dal filesystem
+# Remove file from repository AND filesystem
 git rm agent.ts
 
-# Rimuovi dal repository ma MANTIENI nel filesystem
+# Remove from repository but KEEP in filesystem
 git rm --cached .env
 
-# Commit la rimozione
+# Commit the removal
 git commit -m "🗑️ Remove file"
 ```
 
 ---
 
-## 🌿 Branching (Avanzato)
+## 🌿 Branching (Advanced)
 
 ```bash
-# Crea nuovo branch
+# Create new branch
 git branch feature-search
 
-# Passa a un branch
+# Switch to a branch
 git checkout feature-search
 
-# Crea E passa a nuovo branch
+# Create AND switch to new branch
 git checkout -b feature-search
 
-# Lista tutti i branch
+# List all branches
 git branch
 
-# Merge branch in main
+# Merge branch into main
 git checkout main
 git merge feature-search
 
-# Cancella branch
+# Delete branch
 git branch -d feature-search
 ```
 
 ---
 
-## 🔍 Comandi Utili
+## 🔍 Useful Commands
 
-### Vedere Differenze
+### View Differences
 
 ```bash
-# Differenze non staged
+# Unstaged differences
 git diff
 
-# Differenze staged
+# Staged differences
 git diff --cached
 
-# Differenze in file specifico
+# Differences in specific file
 git diff agent.ts
 ```
 
-### Cercare nel Codice
+### Search in Code
 
 ```bash
-# Cerca "function" in tutti i file
+# Search "function" in all files
 git grep "function"
 
-# Cerca solo in file .ts
+# Search only in .ts files
 git grep "function" -- "*.ts"
 ```
 
-### Informazioni
+### Information
 
 ```bash
-# Chi ha modificato ogni riga
+# Who modified each line
 git blame agent.ts
 
-# Info su commit specifico
+# Info on specific commit
 git show <commit-hash>
 ```
 
 ---
 
-## 🆘 Emergenze
+## 🆘 Emergencies
 
-### Ho committato .env per errore!
+### I committed .env by mistake!
 
 ```bash
-# 1. Rimuovi dal tracking
+# 1. Remove from tracking
 git rm --cached .env
 
-# 2. Aggiungi al .gitignore se non c'è già
+# 2. Add to .gitignore if not already there
 echo ".env" >> .gitignore
 
 # 3. Commit
@@ -202,32 +202,32 @@ git commit -m "🔒 Remove .env from tracking"
 # 4. Push
 git push
 
-# 5. IMPORTANTE: Rigenera la API key!
+# 5. IMPORTANT: Regenerate the API key!
 ```
 
-### Ho fatto commit sbagliato
+### I made a wrong commit
 
 ```bash
-# Annulla ultimo commit (mantieni modifiche)
+# Undo last commit (keep changes)
 git reset --soft HEAD~1
 
-# Annulla ultimo commit (ELIMINA modifiche)
+# Undo last commit (DELETE changes)
 git reset --hard HEAD~1
 ```
 
-### Ho pushato per errore
+### I pushed by mistake
 
 ```bash
-# Annulla ultimo commit su GitHub (ATTENZIONE!)
+# Undo last commit on GitHub (CAUTION!)
 git reset --hard HEAD~1
 git push --force
 ```
 
 ---
 
-## 📊 Emoji per Commit Messages
+## 📊 Emojis for Commit Messages
 
-| Emoji | Code | Uso |
+| Emoji | Code | Use |
 |-------|------|-----|
 | 🎉 | `:tada:` | Initial commit |
 | ✨ | `:sparkles:` | New feature |
@@ -242,19 +242,19 @@ git push --force
 
 ---
 
-## ✅ Checklist Prima di Push
+## ✅ Checklist Before Push
 
 ```bash
-# 1. Verifica status
+# 1. Verify status
 git status
 
-# 2. Verifica che .env NON sia incluso
-# Se vedi .env in "Changes to be committed", FERMATI!
+# 2. Verify that .env is NOT included
+# If you see .env in "Changes to be committed", STOP!
 
-# 3. Vedi cosa stai per committare
+# 3. See what you're about to commit
 git diff --cached
 
-# 4. Se tutto ok, commit
+# 4. If all ok, commit
 git commit -m "Message"
 
 # 5. Push
@@ -263,21 +263,21 @@ git push
 
 ---
 
-## 🎯 Pattern Comune: Feature Development
+## 🎯 Common Pattern: Feature Development
 
 ```bash
-# 1. Crea branch per feature
+# 1. Create branch for feature
 git checkout -b add-search-tool
 
-# 2. Lavora, commit spesso
+# 2. Work, commit often
 git add .
 git commit -m "🚧 WIP: search tool"
 
-# 3. Quando finito
+# 3. When finished
 git add .
 git commit -m "✨ Complete search tool implementation"
 
-# 4. Torna a main
+# 4. Go back to main
 git checkout main
 
 # 5. Merge
@@ -286,25 +286,25 @@ git merge add-search-tool
 # 6. Push
 git push
 
-# 7. Cancella branch (opzionale)
+# 7. Delete branch (optional)
 git branch -d add-search-tool
 ```
 
 ---
 
-## 📱 Comandi da Mobile (GitHub.com)
+## 📱 Mobile Commands (GitHub.com)
 
-Se sei su mobile e vuoi fare modifiche veloci:
+If you're on mobile and want to make quick edits:
 
-1. Vai su github.com/your-repo
-2. Naviga al file
-3. Click su icona matita (✏️)
-4. Modifica
-5. Commit direttamente da web
+1. Go to github.com/your-repo
+2. Navigate to the file
+3. Click pencil icon (✏️)
+4. Edit
+5. Commit directly from web
 
 ---
 
-## 🔗 Collegamenti Utili
+## 🔗 Useful Links
 
 - [Git Cheat Sheet PDF](https://education.github.com/git-cheat-sheet-education.pdf)
 - [GitHub Docs](https://docs.github.com)
@@ -315,12 +315,12 @@ Se sei su mobile e vuoi fare modifiche veloci:
 
 ## 💡 Pro Tips
 
-1. **Commit spesso**: Meglio tanti piccoli commit che uno gigante
-2. **Message chiari**: "Fix bug" è male, "🐛 Fix tool execution error in bash_tool" è bene
-3. **Usa branch**: Per features grandi, usa branch separati
-4. **Pull prima di push**: Se lavori con altri, `git pull` prima di `git push`
-5. **Non committare segreti**: Mai .env, mai API keys
-6. **.gitignore presto**: Aggiungilo nel primo commit
+1. **Commit often**: Better many small commits than one giant one
+2. **Clear messages**: "Fix bug" is bad, "🐛 Fix tool execution error in bash_tool" is good
+3. **Use branches**: For large features, use separate branches
+4. **Pull before push**: If working with others, `git pull` before `git push`
+5. **Don't commit secrets**: Never .env, never API keys
+6. **.gitignore early**: Add it in the first commit
 
 ---
 
@@ -328,13 +328,13 @@ Se sei su mobile e vuoi fare modifiche veloci:
 
 ```bash
 # Status
-git st  # (dopo: git config --global alias.st status)
+git st  # (after: git config --global alias.st status)
 
-# Commit rapido
-git commit -am "Message"  # Add + Commit in uno (solo per file già tracked)
+# Quick commit
+git commit -am "Message"  # Add + Commit in one (only for already tracked files)
 
-# Log compatto
-git lg  # (dopo: git config --global alias.lg "log --oneline --graph")
+# Compact log
+git lg  # (after: git config --global alias.lg "log --oneline --graph")
 ```
 
 ---

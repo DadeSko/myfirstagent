@@ -1,17 +1,17 @@
 # 🗂️ Workspace Manager Tool - Deep Dive
 
-Guida completa sull'implementazione di un tool per gestire workspace e strutture di progetto.
+Complete guide on implementing a tool to manage workspaces and project structures.
 
 ---
 
-## 🎯 Cos'è Workspace Manager?
+## 🎯 What is Workspace Manager?
 
-Il **workspace_manager** è un **meta-tool** che orchestra gli altri primitivi per operazioni complesse su progetti:
+The **workspace_manager** is a **meta-tool** that orchestrates other primitives for complex project operations:
 
-### Senza workspace_manager:
+### Without workspace_manager:
 ```
-User: "Crea un nuovo progetto TypeScript"
-Agent: [10+ tool calls manuali]
+User: "Create a new TypeScript project"
+Agent: [10+ manual tool calls]
   → mkdir
   → create package.json
   → create tsconfig.json
@@ -20,12 +20,12 @@ Agent: [10+ tool calls manuali]
   → ...
 ```
 
-### Con workspace_manager:
+### With workspace_manager:
 ```
-User: "Crea un nuovo progetto TypeScript"
-Agent: [1 tool call intelligente]
+User: "Create a new TypeScript project"
+Agent: [1 intelligent tool call]
   → workspace_manager({ action: "init", template: "typescript" })
-  → Tutto creato automaticamente! ✅
+  → Everything created automatically! ✅
 ```
 
 ---
@@ -43,7 +43,7 @@ Orchestrates:
     └─ code_search (analyze existing code)
 ```
 
-**Pattern:** High-level tool che compone primitive di basso livello.
+**Pattern:** High-level tool that composes low-level primitives.
 
 ---
 
@@ -51,7 +51,7 @@ Orchestrates:
 
 ### 1. **init** - Initialize Project
 
-Crea una nuova struttura di progetto da template.
+Creates a new project structure from a template.
 
 ```typescript
 workspace_manager({
@@ -61,7 +61,7 @@ workspace_manager({
 })
 ```
 
-**Templates Supportati:**
+**Supported Templates:**
 - `typescript` - TypeScript project
 - `node` - Node.js project
 - `react` - React app
@@ -70,7 +70,7 @@ workspace_manager({
 
 ### 2. **scaffold** - Create Structure
 
-Crea una struttura di directory/file specifica.
+Creates a specific directory/file structure.
 
 ```typescript
 workspace_manager({
@@ -88,7 +88,7 @@ workspace_manager({
 
 ### 3. **clean** - Clean Workspace
 
-Rimuove file temporanei, build artifacts, etc.
+Removes temporary files, build artifacts, etc.
 
 ```typescript
 workspace_manager({
@@ -99,7 +99,7 @@ workspace_manager({
 
 ### 4. **analyze** - Analyze Project
 
-Analizza struttura e dipendenze del progetto.
+Analyzes project structure and dependencies.
 
 ```typescript
 workspace_manager({
@@ -109,7 +109,7 @@ workspace_manager({
 
 ### 5. **backup** - Backup Project
 
-Crea backup del workspace.
+Creates a workspace backup.
 
 ```typescript
 workspace_manager({
@@ -126,7 +126,7 @@ workspace_manager({
 const workspaceManagerTool: Tool = {
   name: "workspace_manager",
   description: `Manage workspace and project structures.
-  
+
 This is a high-level tool that orchestrates multiple operations:
 - Initialize new projects from templates
 - Scaffold directory and file structures
@@ -213,19 +213,19 @@ async function workspaceManager(
     switch (options.action) {
       case "init":
         return await initProject(options.template!, options.name!);
-      
+
       case "scaffold":
         return await scaffoldStructure(options.structure!);
-      
+
       case "clean":
         return await cleanWorkspace(options.targets!);
-      
+
       case "analyze":
         return await analyzeProject();
-      
+
       case "backup":
         return await backupProject(options.destination!);
-      
+
       default:
         return `Unknown action: ${options.action}`;
     }
@@ -282,7 +282,7 @@ const TEMPLATES = {
     },
     setup: ["npm install"]
   },
-  
+
   node: {
     name: "Node.js Project",
     structure: {
@@ -302,7 +302,7 @@ const TEMPLATES = {
     },
     setup: []
   },
-  
+
   express: {
     name: "Express API",
     structure: {
@@ -368,31 +368,31 @@ app.listen(PORT, () => {
 
 ```typescript
 async function initProject(
-  template: string, 
+  template: string,
   name: string
 ): Promise<string> {
   try {
     console.log(`🚀 Initializing ${template} project: ${name}`);
-    
+
     // Get template
     const tmpl = TEMPLATES[template as keyof typeof TEMPLATES];
     if (!tmpl) {
       return `Error: Unknown template '${template}'`;
     }
-    
+
     // Create project directory
     await fs.mkdir(name, { recursive: true });
     process.chdir(name);
-    
+
     // Create structure
     const filesCreated = await createStructure(tmpl.structure, name);
-    
+
     // Run setup commands
     for (const cmd of tmpl.setup) {
       console.log(`⚙️  Running: ${cmd}`);
       await execAsync(cmd);
     }
-    
+
     // Initialize git
     try {
       await execAsync("git init");
@@ -400,7 +400,7 @@ async function initProject(
     } catch {
       // Git not available, skip
     }
-    
+
     const result = `✓ Created ${tmpl.name}: ${name}
 
 Files created:
@@ -410,10 +410,10 @@ Next steps:
   cd ${name}
   npm run dev
 `;
-    
+
     console.log(result);
     return result;
-    
+
   } catch (error) {
     return `Error initializing project: ${(error as Error).message}`;
   }
@@ -432,15 +432,15 @@ async function scaffoldStructure(
   basePath: string = "."
 ): Promise<string> {
   const filesCreated: string[] = [];
-  
+
   try {
     await createStructureRecursive(structure, basePath, filesCreated);
-    
+
     return `✓ Scaffolded structure:
 ${filesCreated.map(f => `  - ${f}`).join('\n')}
 
 Total: ${filesCreated.length} items created`;
-    
+
   } catch (error) {
     return `Error scaffolding structure: ${(error as Error).message}`;
   }
@@ -453,18 +453,18 @@ async function createStructureRecursive(
 ): Promise<void> {
   for (const [key, value] of Object.entries(structure)) {
     const fullPath = path.join(basePath, key);
-    
+
     if (key.endsWith("/")) {
       // Directory
       const dirPath = fullPath.slice(0, -1);
       await fs.mkdir(dirPath, { recursive: true });
       filesCreated.push(`📁 ${dirPath}`);
-      
+
       // Recurse into subdirectory
       if (typeof value === "object" && !Array.isArray(value)) {
         await createStructureRecursive(value, dirPath, filesCreated);
       }
-      
+
     } else {
       // File
       const content = typeof value === "string" ? value : "";
@@ -506,7 +506,7 @@ await workspaceManager({
 async function cleanWorkspace(targets: string[]): Promise<string> {
   const deleted: string[] = [];
   const errors: string[] = [];
-  
+
   try {
     for (const target of targets) {
       try {
@@ -515,9 +515,9 @@ async function cleanWorkspace(targets: string[]): Promise<string> {
         if (!exists) {
           continue;
         }
-        
+
         const stats = await fs.stat(target);
-        
+
         if (stats.isDirectory()) {
           await fs.rm(target, { recursive: true, force: true });
           deleted.push(`📁 ${target}/`);
@@ -525,24 +525,24 @@ async function cleanWorkspace(targets: string[]): Promise<string> {
           await fs.unlink(target);
           deleted.push(`📄 ${target}`);
         }
-        
+
       } catch (error) {
         errors.push(`Failed to delete ${target}: ${(error as Error).message}`);
       }
     }
-    
+
     let result = `✓ Cleaned workspace:\n`;
-    
+
     if (deleted.length > 0) {
       result += `\nDeleted:\n${deleted.map(d => `  - ${d}`).join('\n')}`;
     }
-    
+
     if (errors.length > 0) {
       result += `\n\nErrors:\n${errors.map(e => `  - ${e}`).join('\n')}`;
     }
-    
+
     return result;
-    
+
   } catch (error) {
     return `Error cleaning workspace: ${(error as Error).message}`;
   }
@@ -589,7 +589,7 @@ await workspaceManager({
 async function analyzeProject(): Promise<string> {
   try {
     console.log("🔍 Analyzing project...");
-    
+
     const analysis = {
       type: "unknown",
       language: "unknown",
@@ -602,20 +602,20 @@ async function analyzeProject(): Promise<string> {
         byType: {} as Record<string, number>
       }
     };
-    
+
     // Detect project type from package.json
     const pkgExists = await fileExists("package.json");
     if (pkgExists) {
       const pkgContent = await fs.readFile("package.json", "utf-8");
       const pkg = JSON.parse(pkgContent);
-      
+
       analysis.type = "Node.js";
       analysis.dependencies = {
         production: Object.keys(pkg.dependencies || {}).length,
         development: Object.keys(pkg.devDependencies || {}).length
       };
       analysis.scripts = Object.keys(pkg.scripts || {});
-      
+
       // Detect framework/language
       if (pkg.dependencies?.["react"]) {
         analysis.framework = "React";
@@ -624,23 +624,23 @@ async function analyzeProject(): Promise<string> {
       } else if (pkg.dependencies?.["next"]) {
         analysis.framework = "Next.js";
       }
-      
+
       if (pkg.devDependencies?.["typescript"]) {
         analysis.language = "TypeScript";
       } else {
         analysis.language = "JavaScript";
       }
     }
-    
+
     // Analyze file structure
     const files = await getAllFiles(".");
     analysis.files.total = files.length;
-    
+
     for (const file of files) {
       const ext = path.extname(file);
       analysis.files.byType[ext] = (analysis.files.byType[ext] || 0) + 1;
     }
-    
+
     // Detect directory structure
     const dirs = await fs.readdir(".", { withFileTypes: true });
     analysis.structure = {
@@ -649,10 +649,10 @@ async function analyzeProject(): Promise<string> {
       hasDist: dirs.some(d => d.isDirectory() && (d.name === "dist" || d.name === "build")),
       hasPublic: dirs.some(d => d.isDirectory() && d.name === "public")
     };
-    
+
     // Format result
     return formatAnalysis(analysis);
-    
+
   } catch (error) {
     return `Error analyzing project: ${(error as Error).message}`;
   }
@@ -692,23 +692,23 @@ async function getAllFiles(
   fileList: string[] = []
 ): Promise<string[]> {
   const files = await fs.readdir(dir, { withFileTypes: true });
-  
+
   for (const file of files) {
     const filePath = path.join(dir, file.name);
-    
+
     // Skip common ignored directories
-    if (file.isDirectory() && 
+    if (file.isDirectory() &&
         ["node_modules", ".git", "dist", "build"].includes(file.name)) {
       continue;
     }
-    
+
     if (file.isDirectory()) {
       await getAllFiles(filePath, fileList);
     } else {
       fileList.push(filePath);
     }
   }
-  
+
   return fileList;
 }
 ```
@@ -721,14 +721,14 @@ async function getAllFiles(
 async function backupProject(destination: string): Promise<string> {
   try {
     console.log(`💾 Creating backup to ${destination}`);
-    
+
     // Create backup directory with timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const backupName = `backup-${timestamp}`;
     const backupPath = path.join(destination, backupName);
-    
+
     await fs.mkdir(backupPath, { recursive: true });
-    
+
     // Copy files (excluding common ignore patterns)
     const filesCopied = await copyDirectory(".", backupPath, [
       "node_modules",
@@ -737,19 +737,19 @@ async function backupProject(destination: string): Promise<string> {
       "build",
       "*.log"
     ]);
-    
+
     // Create manifest
     const manifest = {
       timestamp: new Date().toISOString(),
       files: filesCopied.length,
       source: process.cwd()
     };
-    
+
     await fs.writeFile(
       path.join(backupPath, "backup-manifest.json"),
       JSON.stringify(manifest, null, 2)
     );
-    
+
     return `✓ Backup created: ${backupPath}
 
 Files backed up: ${filesCopied.length}
@@ -758,7 +758,7 @@ Timestamp: ${timestamp}
 To restore:
   cp -r ${backupPath}/* .
 `;
-    
+
   } catch (error) {
     return `Error creating backup: ${(error as Error).message}`;
   }
@@ -770,19 +770,19 @@ async function copyDirectory(
   ignore: string[]
 ): Promise<string[]> {
   const copied: string[] = [];
-  
+
   await fs.mkdir(dest, { recursive: true });
   const files = await fs.readdir(src, { withFileTypes: true });
-  
+
   for (const file of files) {
     // Check ignore patterns
     if (ignore.some(pattern => file.name.includes(pattern))) {
       continue;
     }
-    
+
     const srcPath = path.join(src, file.name);
     const destPath = path.join(dest, file.name);
-    
+
     if (file.isDirectory()) {
       const subCopied = await copyDirectory(srcPath, destPath, ignore);
       copied.push(...subCopied);
@@ -791,7 +791,7 @@ async function copyDirectory(
       copied.push(srcPath);
     }
   }
-  
+
   return copied;
 }
 ```
@@ -967,28 +967,28 @@ for (const file of files) {
 ## 🎓 Key Takeaways
 
 ### 1. Orchestration Pattern
-workspace_manager mostra come creare **high-level tools** che orchestrano primitive di basso livello.
+workspace_manager shows how to create **high-level tools** that orchestrate low-level primitives.
 
 ### 2. Template System
-Un buon sistema di template accelera drasticamente il setup di nuovi progetti.
+A good template system drastically accelerates new project setup.
 
 ### 3. Validation First
-Sempre validare input e verificare condizioni prima di modificare il filesystem.
+Always validate input and check conditions before modifying the filesystem.
 
 ### 4. Feedback is Key
-Logging e progress updates rendono l'esperienza utente molto migliore.
+Logging and progress updates make the user experience much better.
 
 ### 5. Error Recovery
-Sempre implementare rollback o cleanup in caso di errori.
+Always implement rollback or cleanup in case of errors.
 
 ---
 
 ## 📚 Resources
 
-- [Yeoman](https://yeoman.io/) - Inspiration per template system
+- [Yeoman](https://yeoman.io/) - Inspiration for template system
 - [Plop](https://plopjs.com/) - Micro-generator framework
 - [Scaffolding Best Practices](https://github.com/carbon-design-system/carbon/blob/main/docs/guides/scaffolding.md)
 
 ---
 
-**Remember**: workspace_manager è un **meta-tool** - il suo potere viene dall'orchestrare intelligentemente gli altri tool! 🗂️✨
+**Remember**: workspace_manager is a **meta-tool** - its power comes from intelligently orchestrating other tools! 🗂️✨

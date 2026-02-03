@@ -1,51 +1,51 @@
 # 🔍 Code Search Tool - Deep Dive
 
-Guida completa sull'implementazione di un tool di ricerca codice usando ripgrep.
+Complete guide on implementing a code search tool using ripgrep.
 
 ---
 
-## 🎯 Cos'è Code Search?
+## 🎯 What is Code Search?
 
-Il **code search tool** è il **5° primitivo** di un coding agent professionale secondo Geoffrey Huntley.
+The **code search tool** is the **5th primitive** of a professional coding agent according to Geoffrey Huntley.
 
-### Perché è Importante?
+### Why is it Important?
 
 ```
-Senza code_search:
-  User: "Trova tutte le funzioni async nel progetto"
-  Agent: "Non posso cercare nel codice" ❌
+Without code_search:
+  User: "Find all async functions in the project"
+  Agent: "I can't search in the code" ❌
 
-Con code_search:
-  User: "Trova tutte le funzioni async nel progetto"
-  Agent: [cerca "async function"] 
-         "Trovate 23 occorrenze in 8 file!" ✅
+With code_search:
+  User: "Find all async functions in the project"
+  Agent: [searches "async function"]
+         "Found 23 occurrences in 8 files!" ✅
 ```
 
-**Use Cases Reali:**
-- 🔍 Trovare definizioni di funzioni
-- 📝 Cercare usage di variabili
-- 🐛 Localizzare bug patterns
-- 📊 Analisi codice (quanti TODO?, quanti console.log?)
-- ♻️ Refactoring (trovare tutti gli usi di una API)
+**Real Use Cases:**
+- 🔍 Find function definitions
+- 📝 Search for variable usage
+- 🐛 Locate bug patterns
+- 📊 Code analysis (how many TODOs?, how many console.logs?)
+- ♻️ Refactoring (find all uses of an API)
 
 ---
 
-## 🛠️ La Tecnologia: ripgrep (rg)
+## 🛠️ The Technology: ripgrep (rg)
 
-### Cos'è ripgrep?
+### What is ripgrep?
 
-**ripgrep** (command: `rg`) è un tool di ricerca testo ultra-veloce:
-- ✅ Scritto in Rust → velocissimo
-- ✅ Rispetta .gitignore automaticamente
+**ripgrep** (command: `rg`) is an ultra-fast text search tool:
+- ✅ Written in Rust → super fast
+- ✅ Respects .gitignore automatically
 - ✅ Syntax highlighting
-- ✅ Ricerca ricorsiva intelligente
+- ✅ Smart recursive search
 - ✅ Regex support
 
 ### Geoffrey's Insight
 
 > "What if I were to tell you that there is no magic for indexing source code or any intelligence? Nearly every coding tool currently available uses the open source ripgrep binary under the hood."
 
-**Tutti usano ripgrep:**
+**Everyone uses ripgrep:**
 - Cursor
 - GitHub Copilot
 - Windsurf
@@ -54,7 +54,7 @@ Con code_search:
 
 ---
 
-## 📦 Installazione ripgrep
+## 📦 Installing ripgrep
 
 ### macOS
 ```bash
@@ -68,16 +68,16 @@ sudo apt-get install ripgrep
 
 ### Windows
 ```bash
-# Con Chocolatey
+# With Chocolatey
 choco install ripgrep
 
-# Con Scoop
+# With Scoop
 scoop install ripgrep
 
-# O download da GitHub releases
+# Or download from GitHub releases
 ```
 
-### Verifica Installazione
+### Verify Installation
 ```bash
 rg --version
 # Output: ripgrep 14.1.0
@@ -85,7 +85,7 @@ rg --version
 
 ---
 
-## 🔧 Implementazione Base
+## 🔧 Basic Implementation
 
 ### Tool Definition
 
@@ -93,7 +93,7 @@ rg --version
 const codeSearchTool: Tool = {
   name: "code_search",
   description: `Search for code patterns using ripgrep (rg).
-  
+
 Use this to find code patterns, function definitions, variable usage, or any text in the codebase.
 You can search by pattern, file type, or directory.
 
@@ -127,7 +127,7 @@ Examples:
 };
 ```
 
-### Implementazione Base
+### Basic Implementation
 
 ```typescript
 import { exec } from "child_process";
@@ -142,29 +142,29 @@ async function codeSearch(
   caseSensitive: boolean = false
 ): Promise<string> {
   try {
-    // Costruisci comando ripgrep
+    // Build ripgrep command
     let command = "rg";
-    
-    // Case insensitive di default
+
+    // Case insensitive by default
     if (!caseSensitive) {
       command += " -i";
     }
-    
-    // Aggiungi tipo file se specificato
+
+    // Add file type if specified
     if (fileType) {
       command += ` -t ${fileType}`;
     }
-    
-    // Aggiungi pattern (quoted per sicurezza)
+
+    // Add pattern (quoted for security)
     command += ` "${pattern}"`;
-    
-    // Aggiungi path
+
+    // Add path
     command += ` ${searchPath}`;
-    
+
     console.log(`🔍 Searching for pattern: ${pattern}`);
-    
+
     const { stdout, stderr } = await execAsync(command);
-    
+
     if (stdout) {
       const lines = stdout.trim().split("\n");
       console.log(`✓ Found ${lines.length} matches`);
@@ -172,15 +172,15 @@ async function codeSearch(
     } else {
       return `No matches found for pattern: ${pattern}`;
     }
-    
+
   } catch (error) {
     const err = error as any;
-    
-    // ripgrep exit code 1 = no matches found (non è un errore!)
+
+    // ripgrep exit code 1 = no matches found (not an error!)
     if (err.code === 1) {
       return `No matches found for pattern: ${pattern}`;
     }
-    
+
     return `Error searching: ${err.message}`;
   }
 }
@@ -188,9 +188,9 @@ async function codeSearch(
 
 ---
 
-## 🎨 Implementazione Avanzata
+## 🎨 Advanced Implementation
 
-### Con Tutte le Opzioni ripgrep
+### With All ripgrep Options
 
 ```typescript
 interface CodeSearchOptions {
@@ -217,62 +217,62 @@ async function codeSearch(options: CodeSearchOptions): Promise<string> {
   } = options;
 
   try {
-    // Costruisci comando
+    // Build command
     const args: string[] = ["rg"];
-    
+
     // Case sensitivity
     if (!caseSensitive) {
       args.push("-i");
     }
-    
+
     // File type
     if (fileType) {
       args.push(`-t${fileType}`);
     }
-    
+
     // Max results
     if (maxResults) {
       args.push(`-m ${maxResults}`);
     }
-    
+
     // Context lines
     if (contextLines > 0) {
       args.push(`-C ${contextLines}`);
     }
-    
-    // Files only (solo nomi file, non contenuto)
+
+    // Files only (only file names, not content)
     if (filesOnly) {
       args.push("-l");
     }
-    
+
     // Invert match
     if (invertMatch) {
       args.push("-v");
     }
-    
+
     // Line numbers
     args.push("-n");
-    
-    // Color output (per terminal display)
+
+    // Color output (for terminal display)
     args.push("--color=never");
-    
-    // Pattern e path
+
+    // Pattern and path
     args.push(`"${pattern}"`);
     args.push(path);
-    
+
     const command = args.join(" ");
     console.log(`🔍 Executing: ${command}`);
-    
+
     const { stdout } = await execAsync(command);
-    
+
     if (stdout) {
       const lines = stdout.trim().split("\n");
       console.log(`✓ Found ${lines.length} matches for: ${pattern}`);
       return stdout;
     }
-    
+
     return `No matches found for pattern: ${pattern}`;
-    
+
   } catch (error: any) {
     if (error.code === 1) {
       return `No matches found for pattern: ${pattern}`;
@@ -284,41 +284,41 @@ async function codeSearch(options: CodeSearchOptions): Promise<string> {
 
 ---
 
-## 📊 ripgrep Flags Essenziali
+## 📊 Essential ripgrep Flags
 
-### Flags Più Comuni
+### Most Common Flags
 
 ```bash
 # Case insensitive
 rg -i "pattern"
 
-# Solo file TypeScript
+# Only TypeScript files
 rg -tts "pattern"
 
-# Solo file JavaScript
+# Only JavaScript files
 rg -tjs "pattern"
 
 # Multiple file types
 rg -tts -tjs "pattern"
 
-# Max risultati
+# Max results
 rg -m 10 "pattern"
 
 # Context lines (before/after)
-rg -C 2 "pattern"        # 2 linee prima e dopo
-rg -B 2 "pattern"        # 2 linee prima
-rg -A 2 "pattern"        # 2 linee dopo
+rg -C 2 "pattern"        # 2 lines before and after
+rg -B 2 "pattern"        # 2 lines before
+rg -A 2 "pattern"        # 2 lines after
 
-# Solo nomi file (senza contenuto)
+# Only file names (no content)
 rg -l "pattern"
 
-# Conta occorrenze
+# Count occurrences
 rg -c "pattern"
 
-# Invert match (trova linee CHE NON matchano)
+# Invert match (find lines that DON'T match)
 rg -v "pattern"
 
-# Fixed string (non regex)
+# Fixed string (no regex)
 rg -F "literal.string"
 
 # Word boundary
@@ -348,18 +348,18 @@ rg -U "pattern.*across.*lines"
 ### Custom File Types
 
 ```bash
-# Definisci custom type
+# Define custom type
 rg --type-add 'config:*.{yml,yaml,toml,json}' -tconfig "pattern"
 ```
 
 ---
 
-## 🎯 Use Cases Real-World
+## 🎯 Real-World Use Cases
 
-### 1. Trova Definizioni di Funzioni
+### 1. Find Function Definitions
 
 ```typescript
-// User: "Trova dove è definita la funzione readFile"
+// User: "Find where the readFile function is defined"
 await codeSearch({
   pattern: "^(async )?function readFile",
   fileType: "ts"
@@ -369,10 +369,10 @@ await codeSearch({
 // agent.ts:85:async function readFile(filePath: string): Promise<string> {
 ```
 
-### 2. Trova Tutti i TODO
+### 2. Find All TODOs
 
 ```typescript
-// User: "Quanti TODO ci sono nel progetto?"
+// User: "How many TODOs are in the project?"
 await codeSearch({
   pattern: "TODO|FIXME|XXX",
   caseSensitive: false
@@ -384,10 +384,10 @@ await codeSearch({
 // index.ts:12:// XXX: Temporary hack
 ```
 
-### 3. Trova Imports da un Package
+### 3. Find Imports from a Package
 
 ```typescript
-// User: "Trova tutti i file che importano da Anthropic"
+// User: "Find all files that import from Anthropic"
 await codeSearch({
   pattern: 'import.*from.*"@anthropic-ai/sdk"',
   fileType: "ts"
@@ -398,10 +398,10 @@ await codeSearch({
 // test.ts:3:import Anthropic from "@anthropic-ai/sdk";
 ```
 
-### 4. Trova Usage di una Variabile
+### 4. Find Variable Usage
 
 ```typescript
-// User: "Dove viene usata la variabile 'client'?"
+// User: "Where is the 'client' variable used?"
 await codeSearch({
   pattern: "\\bclient\\b",  // Word boundary
   fileType: "ts"
@@ -412,10 +412,10 @@ await codeSearch({
 // agent.ts:145:  const response = await client.messages.create({
 ```
 
-### 5. Analisi Sicurezza
+### 5. Security Analysis
 
 ```typescript
-// User: "Cerca potenziali security issues"
+// User: "Search for potential security issues"
 await codeSearch({
   pattern: "eval\\(|innerHTML|dangerouslySetInnerHTML"
 });
@@ -426,7 +426,7 @@ await codeSearch({
 
 ---
 
-## 🔬 Parsing Output di ripgrep
+## 🔬 Parsing ripgrep Output
 
 ### Output Format
 
@@ -434,14 +434,14 @@ await codeSearch({
 file_path:line_number:matched_line_content
 ```
 
-Esempio:
+Example:
 ```
 agent.ts:85:async function readFile(filePath: string): Promise<string> {
 agent.ts:120:  console.log("Reading file...");
 utils.ts:12:function processFile(path: string) {
 ```
 
-### Parser Avanzato
+### Advanced Parser
 
 ```typescript
 interface SearchMatch {
@@ -453,11 +453,11 @@ interface SearchMatch {
 function parseRipgrepOutput(output: string): SearchMatch[] {
   const matches: SearchMatch[] = [];
   const lines = output.trim().split("\n");
-  
+
   for (const line of lines) {
     // Format: file:line:content
     const match = line.match(/^([^:]+):(\d+):(.+)$/);
-    
+
     if (match) {
       matches.push({
         file: match[1],
@@ -466,29 +466,29 @@ function parseRipgrepOutput(output: string): SearchMatch[] {
       });
     }
   }
-  
+
   return matches;
 }
 
-// Uso:
+// Usage:
 async function codeSearchParsed(pattern: string): Promise<SearchMatch[]> {
   const output = await codeSearch({ pattern });
   return parseRipgrepOutput(output);
 }
 ```
 
-### Formatted Output per Claude
+### Formatted Output for Claude
 
 ```typescript
 async function codeSearch(options: CodeSearchOptions): Promise<string> {
   try {
     const output = await executeRipgrep(options);
     const matches = parseRipgrepOutput(output);
-    
+
     if (matches.length === 0) {
       return `No matches found for pattern: ${options.pattern}`;
     }
-    
+
     // Group by file
     const byFile = new Map<string, SearchMatch[]>();
     for (const match of matches) {
@@ -497,10 +497,10 @@ async function codeSearch(options: CodeSearchOptions): Promise<string> {
       }
       byFile.get(match.file)!.push(match);
     }
-    
+
     // Format output
     let result = `Found ${matches.length} matches in ${byFile.size} files:\n\n`;
-    
+
     for (const [file, fileMatches] of byFile) {
       result += `📄 ${file} (${fileMatches.length} matches):\n`;
       for (const match of fileMatches) {
@@ -508,9 +508,9 @@ async function codeSearch(options: CodeSearchOptions): Promise<string> {
       }
       result += "\n";
     }
-    
+
     return result;
-    
+
   } catch (error) {
     return `Error: ${(error as Error).message}`;
   }
@@ -544,10 +544,10 @@ function escapeRegex(pattern: string): string {
 }
 
 async function codeSearch(pattern: string): Promise<string> {
-  // Se user input è literal string, escape it
+  // If user input is literal string, escape it
   const escapedPattern = escapeRegex(pattern);
-  
-  // Usa -F per literal search (no regex)
+
+  // Use -F for literal search (no regex)
   const command = `rg -F "${escapedPattern}"`;
   // ...
 }
@@ -558,16 +558,16 @@ async function codeSearch(pattern: string): Promise<string> {
 ```typescript
 async function codeSearch(pattern: string): Promise<string> {
   const MAX_RESULTS = 500;
-  
-  // Usa -m flag per limitare
+
+  // Use -m flag to limit
   const command = `rg -m ${MAX_RESULTS} "${pattern}"`;
-  
+
   const output = await execAsync(command);
-  
+
   if (output.stdout.includes(`(${MAX_RESULTS} matches shown)`)) {
     return `Found ${MAX_RESULTS}+ matches (truncated). Please refine your search.`;
   }
-  
+
   return output.stdout;
 }
 ```
@@ -577,7 +577,7 @@ async function codeSearch(pattern: string): Promise<string> {
 ```typescript
 async function codeSearch(pattern: string): Promise<string> {
   try {
-    // Timeout di 10 secondi
+    // 10 second timeout
     const { stdout } = await execAsync(
       `rg "${pattern}"`,
       { timeout: 10000 }
@@ -603,15 +603,15 @@ async function codeSearch(
 ): Promise<string> {
   // Normalize path
   const safePath = path.normalize(searchPath);
-  
+
   // Security check
   const cwd = process.cwd();
   const absolutePath = path.resolve(safePath);
-  
+
   if (!absolutePath.startsWith(cwd)) {
     return "Error: Search path outside working directory";
   }
-  
+
   // Proceed with search
   const command = `rg "${pattern}" ${safePath}`;
   // ...
@@ -622,16 +622,16 @@ async function codeSearch(
 
 ## 🎨 Advanced Features
 
-### 1. Search con Context
+### 1. Search with Context
 
 ```typescript
 async function codeSearchWithContext(
   pattern: string,
   contextLines: number = 2
 ): Promise<string> {
-  // -C 2 mostra 2 linee prima e dopo ogni match
+  // -C 2 shows 2 lines before and after each match
   const command = `rg -C ${contextLines} "${pattern}"`;
-  
+
   const { stdout } = await execAsync(command);
   return stdout;
 }
@@ -648,9 +648,9 @@ async function codeSearchWithContext(
 
 ```typescript
 async function findFilesContaining(pattern: string): Promise<string[]> {
-  // -l flag: solo nomi file
+  // -l flag: only file names
   const { stdout } = await execAsync(`rg -l "${pattern}"`);
-  
+
   return stdout.trim().split("\n");
 }
 
@@ -669,17 +669,17 @@ async function codeSearchStats(pattern: string): Promise<{
 }> {
   // -c flag: count per file
   const { stdout } = await execAsync(`rg -c "${pattern}"`);
-  
+
   const matchesByFile = new Map<string, number>();
   let totalMatches = 0;
-  
+
   for (const line of stdout.trim().split("\n")) {
     const [file, count] = line.split(":");
     const num = parseInt(count, 10);
     matchesByFile.set(file, num);
     totalMatches += num;
   }
-  
+
   return {
     totalMatches,
     files: matchesByFile.size,
@@ -698,9 +698,9 @@ console.log(`Found ${stats.totalMatches} async keywords in ${stats.files} files`
 async function codeSearchMultiple(
   patterns: string[]
 ): Promise<string> {
-  // Combina patterns con OR (|)
+  // Combine patterns with OR (|)
   const combinedPattern = patterns.join("|");
-  
+
   const { stdout } = await execAsync(`rg "${combinedPattern}"`);
   return stdout;
 }
@@ -717,33 +717,33 @@ await codeSearchMultiple(["TODO", "FIXME", "XXX", "HACK"]);
 
 ```bash
 # Test 1: Basic search
-npx ts-node agent.ts "Cerca 'function' nel codice"
+npx ts-node agent.ts "Search for 'function' in the code"
 
 # Test 2: File type filter
-npx ts-node agent.ts "Cerca 'import' solo nei file TypeScript"
+npx ts-node agent.ts "Search for 'import' only in TypeScript files"
 
 # Test 3: Case sensitivity
-npx ts-node agent.ts "Cerca 'TODO' case-sensitive"
+npx ts-node agent.ts "Search for 'TODO' case-sensitive"
 
 # Test 4: No matches
-npx ts-node agent.ts "Cerca 'this-definitely-does-not-exist'"
+npx ts-node agent.ts "Search for 'this-definitely-does-not-exist'"
 
 # Test 5: Multiple matches
-npx ts-node agent.ts "Cerca 'async' e dimmi quante ce ne sono"
+npx ts-node agent.ts "Search for 'async' and tell me how many there are"
 
 # Test 6: Context
-npx ts-node agent.ts "Cerca 'readFile' e mostrami il contesto"
+npx ts-node agent.ts "Search for 'readFile' and show me the context"
 ```
 
 ---
 
-## 📊 Tool Definition Completo
+## 📊 Complete Tool Definition
 
 ```typescript
 const codeSearchTool: Tool = {
   name: "code_search",
   description: `Search for code patterns using ripgrep (rg).
-  
+
 This tool is extremely powerful for finding:
 - Function definitions and usage
 - Variable references
@@ -804,33 +804,33 @@ Examples:
 
 ## 💡 Pro Tips
 
-### 1. Combine con Altri Tool
+### 1. Combine with Other Tools
 
 ```typescript
 // Pattern: Search → Read → Analyze
-// 1. Search per trovare file
+// 1. Search to find files
 const files = await findFilesContaining("async");
 
-// 2. Read file interessanti
+// 2. Read interesting files
 for (const file of files) {
   const content = await readFile(file);
   // Analyze...
 }
 ```
 
-### 2. Usa per Refactoring
+### 2. Use for Refactoring
 
 ```typescript
-// User: "Rinomina tutte le occorrenze di oldFunctionName con newFunctionName"
+// User: "Rename all occurrences of oldFunctionName to newFunctionName"
 
 // 1. Search
 const matches = await codeSearch("oldFunctionName");
 
-// 2. Edit ogni file
+// 2. Edit each file
 for (const match of matches) {
   await editFile(
-    match.file, 
-    "oldFunctionName", 
+    match.file,
+    "oldFunctionName",
     "newFunctionName"
   );
 }
@@ -853,9 +853,9 @@ console.log(`Code Quality Report:
 
 ---
 
-## 🎓 Esercizio Pratico
+## 🎓 Practical Exercise
 
-Implementa un tool `code_analyzer` che usa `code_search` per:
+Implement a `code_analyzer` tool that uses `code_search` to:
 
 ```typescript
 async function analyzeCodebase(): Promise<string> {
@@ -864,14 +864,14 @@ async function analyzeCodebase(): Promise<string> {
   // 3. Count TODO comments
   // 4. Find potential security issues
   // 5. List most imported modules
-  
+
   // Generate report with all stats
 }
 ```
 
 ---
 
-## 📚 Risorse
+## 📚 Resources
 
 - [ripgrep GitHub](https://github.com/BurntSushi/ripgrep)
 - [ripgrep User Guide](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md)
@@ -879,4 +879,4 @@ async function analyzeCodebase(): Promise<string> {
 
 ---
 
-**Remember**: Code search non è solo "trovare testo" - è **comprendere la struttura** del codice, trovare **pattern**, e abilitare **refactoring intelligente**! 🔍✨
+**Remember**: Code search isn't just "finding text" - it's **understanding code structure**, finding **patterns**, and enabling **intelligent refactoring**! 🔍✨

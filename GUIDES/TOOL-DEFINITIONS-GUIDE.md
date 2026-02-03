@@ -1,18 +1,18 @@
 # 🔧 Tool Definition Structure - Deep Dive
 
-Guida approfondita su come funzionano le definizioni dei tool negli agent.
+In-depth guide on how tool definitions work in agents.
 
 ---
 
-## 🎯 Cos'è una Tool Definition?
+## 🎯 What is a Tool Definition?
 
-Una tool definition è un **contratto** tra il tuo agent e Claude. È composta da tre parti:
+A tool definition is a **contract** between your agent and Claude. It consists of three parts:
 
 ```typescript
 interface Tool {
-  name: string;              // 1. Nome del tool
-  description: string;       // 2. "Billboard" per Claude
-  input_schema: {            // 3. Schema dei parametri
+  name: string;              // 1. Tool name
+  description: string;       // 2. "Billboard" for Claude
+  input_schema: {            // 3. Parameter schema
     type: "object";
     properties: Record<string, any>;
     required?: string[];
@@ -20,16 +20,16 @@ interface Tool {
 }
 ```
 
-Pensa a questo come a una **inserzione di lavoro**:
-- **Nome**: Il titolo del ruolo ("Software Engineer")
-- **Description**: La descrizione del ruolo e responsabilità
-- **Input Schema**: I requisiti/qualifiche necessarie
+Think of this as a **job posting**:
+- **Name**: The job title ("Software Engineer")
+- **Description**: The role description and responsibilities
+- **Input Schema**: The required qualifications/requirements
 
 ---
 
-## 📋 Parte 1: Name
+## 📋 Part 1: Name
 
-### Regole per il Nome
+### Rules for Names
 
 ```typescript
 // ✅ GOOD
@@ -39,73 +39,73 @@ name: "bash"
 name: "edit_file"
 
 // ❌ BAD
-name: "readFile"        // Evita camelCase
-name: "read-file"       // Evita trattini (usa underscore)
-name: "File Reader"     // Evita spazi
-name: "r"              // Troppo corto, non descrittivo
+name: "readFile"        // Avoid camelCase
+name: "read-file"       // Avoid hyphens (use underscores)
+name: "File Reader"     // Avoid spaces
+name: "r"              // Too short, not descriptive
 ```
 
 ### Best Practices
 
-1. **Snake case**: Usa `underscore_case`
-2. **Descrittivo**: Il nome deve dire cosa fa
-3. **Breve ma chiaro**: 1-3 parole
-4. **Verbo + Sostantivo**: `read_file`, `list_files`, `execute_bash`
+1. **Snake case**: Use `underscore_case`
+2. **Descriptive**: The name should say what it does
+3. **Short but clear**: 1-3 words
+4. **Verb + Noun**: `read_file`, `list_files`, `execute_bash`
 
-### Esempi dal Nostro Agent
+### Examples from Our Agent
 
 ```typescript
 const readFileTool: Tool = {
-  name: "read_file",      // Chiaro: legge un file
+  name: "read_file",      // Clear: reads a file
   // ...
 };
 
 const bashTool: Tool = {
-  name: "bash",           // Succinto: esegue bash
+  name: "bash",           // Succinct: executes bash
   // ...
 };
 ```
 
 ---
 
-## 💬 Parte 2: Description (Il Billboard)
+## 💬 Part 2: Description (The Billboard)
 
-### Perché è Importante?
+### Why is it Important?
 
-La description è un **"billboard"** che nudge il **latent space** di Claude. 
+The description is a **"billboard"** that nudges Claude's **latent space**.
 
-**Geoffrey's Insight**: 
+**Geoffrey's Insight**:
 > "It's just a function with a billboard on top that nudges the LLM's latent space to invoke that function."
 
-### Anatomia di una Buona Description
+### Anatomy of a Good Description
 
 ```typescript
 description: `
-  [COSA FA il tool]
-  [QUANDO usarlo]
-  [QUANDO NON usarlo - opzionale]
-  [DETTAGLI TECNICI - opzionale]
+  [WHAT the tool does]
+  [WHEN to use it]
+  [WHEN NOT to use it - optional]
+  [TECHNICAL DETAILS - optional]
 `
 ```
 
-### Esempio: read_file
+### Example: read_file
 
 ```typescript
-// ❌ BAD - Troppo generica
+// ❌ BAD - Too generic
 description: "Reads files"
 
-// ✅ GOOD - Completa e guidante
-description: `Read the contents of a given relative file path. 
-Use this when you want to see what's inside a file. 
+// ✅ GOOD - Complete and guiding
+description: `Read the contents of a given relative file path.
+Use this when you want to see what's inside a file.
 Do not use this with directory names.`
 ```
 
 **Breakdown**:
-1. ✅ **Cosa fa**: "Read the contents..."
-2. ✅ **Quando usare**: "Use this when you want to see..."
-3. ✅ **Quando NON usare**: "Do not use this with directory names"
+1. ✅ **What it does**: "Read the contents..."
+2. ✅ **When to use**: "Use this when you want to see..."
+3. ✅ **When NOT to use**: "Do not use this with directory names"
 
-### Esempio: bash
+### Example: bash
 
 ```typescript
 // ❌ BAD
@@ -115,57 +115,57 @@ description: "Runs commands"
 description: "Execute a bash command and return its output. Use this to run shell commands."
 ```
 
-### Esempio: edit_file
+### Example: edit_file
 
 ```typescript
-// ✅ EXCELLENT - Molto dettagliata
-description: `Edit a file by replacing old_str with new_str. 
+// ✅ EXCELLENT - Very detailed
+description: `Edit a file by replacing old_str with new_str.
 If old_str is empty, creates a new file with new_str as content.`
 ```
 
-**Nota**: Spiega anche il caso speciale (creazione nuovo file)!
+**Note**: It also explains the special case (creating a new file)!
 
-### Pro Tips per Description
+### Pro Tips for Descriptions
 
 ```typescript
-// 1. Sii specifico sul formato output
-description: `List files and directories at a given path. 
+// 1. Be specific about output format
+description: `List files and directories at a given path.
 Returns files with 📄 prefix and directories with 📁 prefix.
 If no path is provided, lists files in the current directory.`
 
-// 2. Includi esempi se aiuta
+// 2. Include examples if it helps
 description: `Search for code patterns using ripgrep.
 Example: search for "function" in all .ts files.
 Use this to find code patterns, function definitions, or variable usage.`
 
-// 3. Menziona limitazioni
+// 3. Mention limitations
 description: `Execute a bash command and return its output.
-Note: Commands with interactive prompts may hang. 
+Note: Commands with interactive prompts may hang.
 Use for non-interactive commands only.`
 ```
 
 ---
 
-## 🎨 Parte 3: Input Schema
+## 🎨 Part 3: Input Schema
 
-L'input schema descrive **quali parametri** accetta il tool e **come sono strutturati**.
+The input schema describes **which parameters** the tool accepts and **how they are structured**.
 
-### Struttura Base
+### Basic Structure
 
 ```typescript
 input_schema: {
-  type: "object",           // Sempre "object"
+  type: "object",           // Always "object"
   properties: {
     param_name: {
-      type: "string",       // Tipo del parametro
-      description: "..."    // Cosa rappresenta
+      type: "string",       // Parameter type
+      description: "..."    // What it represents
     }
   },
-  required: ["param_name"]  // Parametri obbligatori
+  required: ["param_name"]  // Required parameters
 }
 ```
 
-### Tipi di Parametri
+### Parameter Types
 
 ```typescript
 // STRING
@@ -213,7 +213,7 @@ properties: {
 }
 ```
 
-### Esempio Completo: read_file
+### Complete Example: read_file
 
 ```typescript
 const readFileTool: Tool = {
@@ -227,12 +227,12 @@ const readFileTool: Tool = {
         description: "The relative path to the file to read"
       }
     },
-    required: ["path"]  // path è obbligatorio
+    required: ["path"]  // path is required
   }
 };
 ```
 
-**Cosa succede quando Claude usa questo tool**:
+**What happens when Claude uses this tool**:
 ```json
 {
   "name": "read_file",
@@ -242,7 +242,7 @@ const readFileTool: Tool = {
 }
 ```
 
-### Esempio Completo: bash
+### Complete Example: bash
 
 ```typescript
 const bashTool: Tool = {
@@ -261,7 +261,7 @@ const bashTool: Tool = {
 };
 ```
 
-**Claude chiama così**:
+**Claude calls it like this**:
 ```json
 {
   "name": "bash",
@@ -271,7 +271,7 @@ const bashTool: Tool = {
 }
 ```
 
-### Esempio Completo: edit_file
+### Complete Example: edit_file
 
 ```typescript
 const editFileTool: Tool = {
@@ -293,14 +293,14 @@ const editFileTool: Tool = {
         description: "The new content to insert"
       }
     },
-    required: ["path", "old_str", "new_str"]  // Tutti obbligatori!
+    required: ["path", "old_str", "new_str"]  // All required!
   }
 };
 ```
 
-**Claude chiama così**:
+**Claude calls it like this**:
 ```json
-// Crea nuovo file
+// Create new file
 {
   "name": "edit_file",
   "input": {
@@ -310,7 +310,7 @@ const editFileTool: Tool = {
   }
 }
 
-// Modifica file esistente
+// Modify existing file
 {
   "name": "edit_file",
   "input": {
@@ -323,9 +323,9 @@ const editFileTool: Tool = {
 
 ---
 
-## 🎭 Parametri Opzionali vs Required
+## 🎭 Optional vs Required Parameters
 
-### Esempio: list_files
+### Example: list_files
 
 ```typescript
 const listFilesTool: Tool = {
@@ -339,24 +339,24 @@ const listFilesTool: Tool = {
         description: "The directory path to list (defaults to current directory)"
       }
     }
-    // ⚠️ NOTA: "required" è assente!
-    // Questo significa che "path" è OPZIONALE
+    // ⚠️ NOTE: "required" is absent!
+    // This means "path" is OPTIONAL
   }
 };
 ```
 
-**Implementazione deve gestire il caso opzionale**:
+**Implementation must handle the optional case**:
 ```typescript
 async function listFiles(dirPath: string = "."): Promise<string> {
-  // ⬆️ Default value "." se non fornito
+  // ⬆️ Default value "." if not provided
   const files = await fs.readdir(dirPath, { withFileTypes: true });
   // ...
 }
 ```
 
-**Claude può chiamare in due modi**:
+**Claude can call it in two ways**:
 ```json
-// Con path
+// With path
 {
   "name": "list_files",
   "input": {
@@ -364,7 +364,7 @@ async function listFiles(dirPath: string = "."): Promise<string> {
   }
 }
 
-// Senza path (usa default)
+// Without path (uses default)
 {
   "name": "list_files",
   "input": {}
@@ -373,9 +373,9 @@ async function listFiles(dirPath: string = "."): Promise<string> {
 
 ---
 
-## 🔬 Advanced: Enum e Constraints
+## 🔬 Advanced: Enum and Constraints
 
-### Enum (Valori Limitati)
+### Enum (Limited Values)
 
 ```typescript
 const searchTool: Tool = {
@@ -399,9 +399,9 @@ const searchTool: Tool = {
 };
 ```
 
-Claude può usare solo uno dei valori enum!
+Claude can only use one of the enum values!
 
-### Constraints (Numeri)
+### Constraints (Numbers)
 
 ```typescript
 properties: {
@@ -416,77 +416,77 @@ properties: {
 
 ---
 
-## 💡 Come Claude Decide Quale Tool Usare?
+## 💡 How Does Claude Decide Which Tool to Use?
 
-### Il Processo di Decision Making
+### The Decision Making Process
 
 ```
-User: "Lista tutti i file TypeScript"
+User: "List all TypeScript files"
          ↓
-Claude analizza la query
+Claude analyzes the query
          ↓
-Claude guarda TUTTE le tool descriptions
+Claude looks at ALL tool descriptions
          ↓
-Claude vede: "list_files" - "List files and directories..."
+Claude sees: "list_files" - "List files and directories..."
          ↓
-"Questo tool è perfetto!"
+"This tool is perfect!"
          ↓
-Claude chiama: list_files({ path: "." })
+Claude calls: list_files({ path: "." })
 ```
 
-### Esempio Real-World
+### Real-World Example
 
-**User**: "Crea fizzbuzz.ts ed eseguilo"
+**User**: "Create fizzbuzz.ts and run it"
 
-**Claude's Thought Process** (ipotetico):
+**Claude's Thought Process** (hypothetical):
 ```
-Step 1: "Crea fizzbuzz.ts"
-  → Guardo i tool...
-  → "edit_file" ha "creates a new file" nella description
-  → Uso edit_file!
+Step 1: "Create fizzbuzz.ts"
+  → Looking at tools...
+  → "edit_file" has "creates a new file" in the description
+  → Using edit_file!
 
-Step 2: "eseguilo"
-  → Devo eseguire un file TypeScript
-  → "bash" può "execute commands"
-  → Uso bash con "ts-node fizzbuzz.ts"!
+Step 2: "run it"
+  → Need to execute a TypeScript file
+  → "bash" can "execute commands"
+  → Using bash with "ts-node fizzbuzz.ts"!
 ```
 
 ---
 
-## 🎯 Best Practices Riassuntive
+## 🎯 Summary Best Practices
 
-### 1. Nome
-✅ Snake case, descrittivo, verbo+sostantivo
+### 1. Name
+✅ Snake case, descriptive, verb+noun
 
 ### 2. Description
-✅ Spiega cosa fa
-✅ Quando usarlo
-✅ Quando NON usarlo
-✅ Casi speciali
+✅ Explain what it does
+✅ When to use it
+✅ When NOT to use it
+✅ Special cases
 
 ### 3. Input Schema
-✅ Type preciso
-✅ Description chiara per ogni parametro
-✅ Required solo per parametri davvero necessari
-✅ Default values nell'implementazione per parametri opzionali
+✅ Precise type
+✅ Clear description for each parameter
+✅ Required only for truly necessary parameters
+✅ Default values in implementation for optional parameters
 
 ---
 
-## 📊 Template per Creare Nuovi Tool
+## 📊 Template for Creating New Tools
 
 ```typescript
 const myNewTool: Tool = {
-  // 1. Nome: snake_case, verbo+sostantivo
+  // 1. Name: snake_case, verb+noun
   name: "my_action",
-  
-  // 2. Description: cosa, quando, dettagli
+
+  // 2. Description: what, when, details
   description: `
     [Primary action description]
     [When to use this tool]
     [Special cases or limitations]
   `,
-  
-  // 3. Schema: definisci parametri
+
+  // 3. Schema: define parameters
   input_schema: {
     type: "object",
     properties: {
@@ -499,22 +499,22 @@ const myNewTool: Tool = {
         description: "This one is optional"
       }
     },
-    required: ["required_param"]  // Solo i parametri obbligatori
+    required: ["required_param"]  // Only required parameters
   }
 };
 ```
 
 ---
 
-## 🧪 Esercizio Pratico
+## 🧪 Practical Exercise
 
-Prova a creare la definition per un tool `create_directory`:
+Try creating the definition for a `create_directory` tool:
 
 ```typescript
 const createDirectoryTool: Tool = {
   name: "create_directory",
-  description: `Create a new directory at the specified path. 
-  Use this when you need to create a folder structure. 
+  description: `Create a new directory at the specified path.
+  Use this when you need to create a folder structure.
   Will create parent directories if they don't exist.`,
   input_schema: {
     type: "object",
@@ -533,16 +533,16 @@ const createDirectoryTool: Tool = {
 };
 ```
 
-Poi implementa la funzione:
+Then implement the function:
 ```typescript
 async function createDirectory(
-  dirPath: string, 
+  dirPath: string,
   recursive: boolean = true
 ): Promise<string> {
-  // La tua implementazione qui!
+  // Your implementation here!
 }
 ```
 
 ---
 
-**Remember**: Le tool definitions sono il **linguaggio** con cui parli a Claude. Più sono chiare, meglio Claude capisce cosa usare e quando! 🎯
+**Remember**: Tool definitions are the **language** you use to talk to Claude. The clearer they are, the better Claude understands what to use and when! 🎯

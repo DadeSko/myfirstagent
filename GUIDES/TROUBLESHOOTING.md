@@ -1,271 +1,271 @@
 # Troubleshooting Guide
 
-## 🚨 Guida al Troubleshooting
+## 🚨 Troubleshooting Guide
 
-Una guida completa per diagnosticare e risolvere problemi comuni nel nostro ambiente di sviluppo.
+A comprehensive guide for diagnosing and solving common problems in our development environment.
 
-## 🎯 Metodologia di Troubleshooting
+## 🎯 Troubleshooting Methodology
 
-### Approccio Sistematico (5W + H)
+### Systematic Approach (5W + H)
 
-1. **What** - Cosa sta succedendo?
-2. **When** - Quando si verifica il problema?
-3. **Where** - Dove si manifesta?
-4. **Who** - Chi è coinvolto/chi può aiutare?
-5. **Why** - Perché sta succedendo?
-6. **How** - Come possiamo risolverlo?
+1. **What** - What is happening?
+2. **When** - When does the problem occur?
+3. **Where** - Where does it manifest?
+4. **Who** - Who is involved/who can help?
+5. **Why** - Why is it happening?
+6. **How** - How can we fix it?
 
-## 🔧 Problemi Comuni e Soluzioni
+## 🔧 Common Problems and Solutions
 
-### 1. Problemi di Installazione e Dipendenze
+### 1. Installation and Dependency Problems
 
-#### Sintomi
+#### Symptoms
 ```bash
-# Errori tipici:
+# Typical errors:
 npm ERR! Cannot resolve dependency
 Module not found: Error: Can't resolve 'package-name'
 npm WARN peer dep missing
 ```
 
-#### Diagnosi
+#### Diagnosis
 ```bash
-# Controlla package.json
+# Check package.json
 read_file("package.json")
 
-# Verifica installazioni
+# Verify installations
 bash("npm ls")
 
-# Controlla versioni Node/npm
+# Check Node/npm versions
 bash("node --version")
 bash("npm --version")
 
-# Verifica cache npm
+# Verify npm cache
 bash("npm cache verify")
 ```
 
-#### Soluzioni
+#### Solutions
 ```bash
-# Pulisci e reinstalla
+# Clean and reinstall
 bash("rm -rf node_modules package-lock.json")
 bash("npm cache clean --force")
 bash("npm install")
 
-# Aggiorna npm
+# Update npm
 bash("npm install -g npm@latest")
 
-# Risolvi conflitti peer dependencies
+# Resolve peer dependency conflicts
 bash("npm install --legacy-peer-deps")
 ```
 
-### 2. Problemi di Build e Compilazione
+### 2. Build and Compilation Problems
 
-#### Sintomi
+#### Symptoms
 ```bash
-# Errori tipici:
+# Typical errors:
 Syntax Error: Unexpected token
 Module build failed
 Cannot find module
 ```
 
-#### Diagnosi
+#### Diagnosis
 ```bash
-# Trova file di configurazione
+# Find configuration files
 code_search("webpack|babel|tsconfig")
 
-# Controlla configurazione build
+# Check build configuration
 read_file("webpack.config.js")
 read_file("babel.config.js")
 read_file("tsconfig.json")
 
-# Verifica script npm
+# Verify npm scripts
 bash("npm run build -- --verbose")
 ```
 
-#### Soluzioni
+#### Solutions
 ```bash
-# Pulisci build precedente
+# Clean previous build
 bash("npm run clean")
 bash("rm -rf build/ dist/")
 
-# Build con debug
+# Build with debug
 bash("NODE_ENV=development npm run build")
 
-# Controlla sintassi file specifici
+# Check specific file syntax
 bash("node -c suspicious-file.js")
 ```
 
-### 3. Problemi di Runtime
+### 3. Runtime Problems
 
-#### Sintomi
+#### Symptoms
 ```bash
-# Errori tipici:
+# Typical errors:
 ReferenceError: variable is not defined
 TypeError: Cannot read property 'x' of undefined
 Promise rejection unhandled
 ```
 
-#### Diagnosi
+#### Diagnosis
 ```bash
-# Trova errore specifico
+# Find specific error
 code_search("error message text")
 
-# Controlla console logs
+# Check console logs
 code_search("console\\.log|console\\.error")
 
-# Verifica async/await usage
+# Verify async/await usage
 code_search("async|await")
 
-# Controlla gestione errori
+# Check error handling
 code_search("try|catch|throw")
 ```
 
-#### Soluzioni
+#### Solutions
 ```bash
-# Aggiungi logging dettagliato
+# Add detailed logging
 edit_file(
   path="problematic-file.js",
   old_str="function problematicFunction() {",
   new_str="function problematicFunction() {\n  console.log('🔍 Debugging:', arguments);"
 )
 
-# Test in isolamento
+# Test in isolation
 bash("node -e \"require('./problematic-file.js')\"")
 ```
 
-### 4. Problemi di Rete e API
+### 4. Network and API Problems
 
-#### Sintomi
+#### Symptoms
 ```bash
-# Errori tipici:
+# Typical errors:
 ECONNREFUSED
 CORS error
 Timeout
 504 Gateway Timeout
 ```
 
-#### Diagnosi
+#### Diagnosis
 ```bash
-# Test connettività
+# Test connectivity
 bash("ping api-server.com")
 bash("curl -I http://localhost:3000/api/health")
 
-# Controlla porte in uso
+# Check ports in use
 bash("netstat -tulpn | grep :3000")
 
-# Verifica variabili ambiente
+# Verify environment variables
 bash("env | grep -i api")
 
-# Trova configurazioni API
+# Find API configurations
 code_search("baseURL|apiUrl|endpoint")
 ```
 
-#### Soluzioni
+#### Solutions
 ```bash
-# Test endpoint manualmente
+# Test endpoint manually
 bash("curl -v http://localhost:3000/api/test")
 
-# Controlla CORS settings
+# Check CORS settings
 code_search("cors|Access-Control")
 
-# Verifica proxy settings
-read_file("package.json") # sezione "proxy"
+# Verify proxy settings
+read_file("package.json") # "proxy" section
 ```
 
-### 5. Problemi di Testing
+### 5. Testing Problems
 
-#### Sintomi
+#### Symptoms
 ```bash
-# Errori tipici:
+# Typical errors:
 Test suite failed to run
 Cannot find module in test
 Timeout in test
 ```
 
-#### Diagnosi
+#### Diagnosis
 ```bash
-# Trova configurazione test
+# Find test configuration
 read_file("jest.config.js")
-read_file("package.json") # sezione "jest"
+read_file("package.json") # "jest" section
 
-# Controlla setup test
+# Check test setup
 code_search("setupTests|test setup")
 
-# Verifica mocks
+# Verify mocks
 code_search("jest\\.mock|__mocks__")
 ```
 
-#### Soluzioni
+#### Solutions
 ```bash
-# Esegui test specifici
+# Run specific tests
 bash("npm test -- --testNamePattern=\"test name\"")
 
 # Debug test
 bash("npm test -- --detectOpenHandles --forceExit")
 
-# Pulisci cache Jest
+# Clean Jest cache
 bash("npm test -- --clearCache")
 ```
 
-## 🔍 Strategie di Debug Avanzate
+## 🔍 Advanced Debug Strategies
 
-### Debug con Logging Strategico
+### Debug with Strategic Logging
 
 ```javascript
-// Template di logging efficace
+// Effective logging template
 const debugLog = (label, data) => {
   console.log(`🔍 ${label}:`, JSON.stringify(data, null, 2));
 };
 
-// Nei punti critici:
+// At critical points:
 debugLog('Function Input', { param1, param2 });
 debugLog('Before API Call', { url, payload });
 debugLog('API Response', response.data);
 debugLog('Function Output', result);
 ```
 
-### Analisi Performance
+### Performance Analysis
 
 ```bash
-# Profiling memoria
+# Memory profiling
 bash("node --inspect --max-old-space-size=4096 app.js")
 
-# Analisi bundle size
+# Bundle size analysis
 bash("npm run build -- --analyze")
 
-# Monitor risorse
+# Resource monitoring
 bash("top -p $(pgrep node)")
 ```
 
-### Debug Network
+### Network Debug
 
 ```bash
-# Sniffing traffico
+# Traffic sniffing
 bash("tcpdump -i lo0 port 3000")
 
-# Analisi richieste HTTP
+# HTTP request analysis
 bash("curl -w \"@curl-format.txt\" -o /dev/null -s http://localhost:3000")
 ```
 
-## 🛠️ Toolkit di Emergenza
+## 🛠️ Emergency Toolkit
 
-### Comandi di Ripristino Rapido
+### Quick Recovery Commands
 
 ```bash
-# Reset completo dipendenze
+# Complete dependency reset
 emergency_deps_reset() {
   rm -rf node_modules package-lock.json
   npm cache clean --force
   npm install
 }
 
-# Reset Git (attenzione!)
+# Git reset (caution!)
 emergency_git_reset() {
   git stash
   git reset --hard HEAD
   git clean -fd
 }
 
-# Backup configurazioni importanti
+# Backup important configurations
 backup_configs() {
   cp package.json package.json.backup
   cp .env .env.backup
@@ -273,10 +273,10 @@ backup_configs() {
 }
 ```
 
-### Health Check Rapido
+### Quick Health Check
 
 ```bash
-# Script di verifica sistema
+# System verification script
 system_health_check() {
   echo "📊 System Health Check"
   echo "Node version: $(node --version)"
@@ -287,95 +287,95 @@ system_health_check() {
 }
 ```
 
-## 📋 Checklist di Troubleshooting
+## 📋 Troubleshooting Checklist
 
 ### Pre-Debug Checklist
-- [ ] Problema riproducibile?
-- [ ] Messaggi di errore completi raccolti?
-- [ ] Ultima modifica identificata?
-- [ ] Environment verificato (dev/staging/prod)?
-- [ ] Dipendenze aggiornate di recente?
+- [ ] Problem reproducible?
+- [ ] Complete error messages collected?
+- [ ] Last change identified?
+- [ ] Environment verified (dev/staging/prod)?
+- [ ] Dependencies recently updated?
 
-### Durante il Debug
-- [ ] Ipotesi formulata?
-- [ ] Test case creato?
-- [ ] Logging aggiunto nei punti critici?
-- [ ] Variabili di ambiente verificate?
-- [ ] Documentazione consultata?
+### During Debug
+- [ ] Hypothesis formulated?
+- [ ] Test case created?
+- [ ] Logging added at critical points?
+- [ ] Environment variables verified?
+- [ ] Documentation consulted?
 
 ### Post-Fix Checklist
-- [ ] Fix testato in isolamento?
-- [ ] Regressioni verificate?
-- [ ] Logging di debug rimosso?
-- [ ] Documentazione aggiornata?
-- [ ] Team informato del fix?
+- [ ] Fix tested in isolation?
+- [ ] Regressions verified?
+- [ ] Debug logging removed?
+- [ ] Documentation updated?
+- [ ] Team informed of fix?
 
-## 🚀 Esempi di Troubleshooting Completi
+## 🚀 Complete Troubleshooting Examples
 
-### Esempio 1: App non si avvia
+### Example 1: App Won't Start
 
 ```bash
-# 1. Diagnosi iniziale
+# 1. Initial diagnosis
 bash("npm start 2>&1 | head -20")
 
-# 2. Verifica porta
+# 2. Verify port
 bash("lsof -i :3000")
 
-# 3. Controlla configurazione
+# 3. Check configuration
 read_file("package.json")
 
 # 4. Test start script
 bash("node src/index.js")
 
-# 5. Soluzione: porta occupata
+# 5. Solution: port occupied
 bash("kill $(lsof -ti:3000)")
 bash("npm start")
 ```
 
-### Esempio 2: Test che falliscono
+### Example 2: Failing Tests
 
 ```bash
-# 1. Esegui test con verbose
+# 1. Run tests with verbose
 bash("npm test -- --verbose")
 
-# 2. Identifica test fallito
+# 2. Identify failing test
 code_search("describe.*failing test")
 
-# 3. Leggi file di test
+# 3. Read test file
 read_file("tests/failing-test.spec.js")
 
-# 4. Controlla mocks
+# 4. Check mocks
 code_search("jest\\.mock", path="tests/")
 
-# 5. Debug test specifico
+# 5. Debug specific test
 bash("npm test -- --testNamePattern=\"specific test\"")
 ```
 
-### Esempio 3: Build lento
+### Example 3: Slow Build
 
 ```bash
-# 1. Analizza tempo build
+# 1. Analyze build time
 bash("time npm run build")
 
-# 2. Controlla webpack config
+# 2. Check webpack config
 read_file("webpack.config.js")
 
-# 3. Analizza bundle
+# 3. Analyze bundle
 bash("npm run build -- --analyze")
 
-# 4. Identifica bottlenecks
+# 4. Identify bottlenecks
 code_search("import.*node_modules")
 
-# 5. Ottimizza imports
-# Sostituisci import completi con import specifici
+# 5. Optimize imports
+# Replace full imports with specific imports
 ```
 
-## 📚 Risorse e Riferimenti
+## 📚 Resources and References
 
-### Tool di Debug Raccomandati
+### Recommended Debug Tools
 
-- **Chrome DevTools**: Debug frontend
-- **Node.js Inspector**: Debug backend
+- **Chrome DevTools**: Frontend debug
+- **Node.js Inspector**: Backend debug
 - **React DevTools**: Debug React apps
 - **Redux DevTools**: Debug state management
 - **Lighthouse**: Performance analysis
@@ -399,7 +399,7 @@ find . -name "*.log" -size +100M
 ### Log Analysis
 
 ```bash
-# Grep patterns utili
+# Useful grep patterns
 grep -r "ERROR" logs/
 tail -f logs/app.log | grep -i error
 awk '/ERROR/{print $0}' logs/app.log
@@ -410,26 +410,26 @@ cat logs/app.log | jq '.level' | sort | uniq -c
 
 ## 🏆 Best Practices
 
-### Prevenzione
+### Prevention
 
-1. **Monitoring proattivo**
-2. **Testing automatizzato**
-3. **Code review rigorosi**
-4. **Documentazione aggiornata**
-5. **Backup regolari**
+1. **Proactive monitoring**
+2. **Automated testing**
+3. **Rigorous code reviews**
+4. **Updated documentation**
+5. **Regular backups**
 
-### Durante il Debug
+### During Debug
 
-1. **Documenta il processo**
-2. **Testa una cosa alla volta**
-3. **Usa versioning per rollback**
-4. **Coinvolgi il team quando necessario**
-5. **Non fare fix casuali**
+1. **Document the process**
+2. **Test one thing at a time**
+3. **Use versioning for rollback**
+4. **Involve the team when necessary**
+5. **Don't make random fixes**
 
 ### Post-Resolution
 
-1. **Crea test per prevenire regressioni**
-2. **Aggiorna documentazione**
-3. **Condividi la soluzione**
-4. **Rifletti su cosa ha causato il problema**
-5. **Migliora processi per prevenzione futura**
+1. **Create tests to prevent regressions**
+2. **Update documentation**
+3. **Share the solution**
+4. **Reflect on what caused the problem**
+5. **Improve processes for future prevention**

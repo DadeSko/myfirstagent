@@ -1,41 +1,41 @@
-# ⚡ Quick Start - 5 Minuti per il Tuo Primo Agent
+# ⚡ Quick Start - 5 Minutes to Your First Agent
 
-## 🎯 Obiettivo
-Avere il tuo agent funzionante in 5 minuti seguendo Geoffrey Huntley.
+## 🎯 Goal
+Have your agent running in 5 minutes following Geoffrey Huntley.
 
-## 📋 Checklist Pre-Flight
+## 📋 Pre-Flight Checklist
 
-- [ ] Node.js installato (`node --version`)
-- [ ] npm installato (`npm --version`)
-- [ ] API key Anthropic pronta ([Get it here](https://console.anthropic.com/settings/keys))
+- [ ] Node.js installed (`node --version`)
+- [ ] npm installed (`npm --version`)
+- [ ] Anthropic API key ready ([Get it here](https://console.anthropic.com/settings/keys))
 
-## 🚀 Setup (2 minuti)
+## 🚀 Setup (2 minutes)
 
 ```bash
-# 1. Setup automatico
+# 1. Automatic setup
 chmod +x setup.sh
 ./setup.sh
 
-# 2. Configura API key
+# 2. Configure API key
 export ANTHROPIC_API_KEY='sk-ant-...'
 
 # ✅ Done!
 ```
 
-## 🧪 Primo Test (30 secondi)
+## 🧪 First Test (30 seconds)
 
 ```bash
-# Test più semplice possibile
-npx npx ts-node agent.ts "Lista tutti i file in questa directory"
+# Simplest possible test
+npx ts-node agent.ts "List all files in this directory"
 ```
 
-**Nota**: Usa `npx ts-node` (con npx davanti) - questo funziona sempre senza installazioni globali!
+**Note**: Use `npx ts-node` (with npx in front) - this always works without global installations!
 
-**Output atteso:**
+**Expected output:**
 ```
 🤖 Agent starting...
 
-User: Lista tutti i file in questa directory
+User: List all files in this directory
 
 Stop reason: tool_use
 
@@ -46,164 +46,164 @@ Stop reason: tool_use
    ...
 
 🤖 Claude:
-Ecco i file nella directory...
+Here are the files in the directory...
 
 ✅ Agent finished
 ```
 
-## 🎓 Secondo Test - FizzBuzz (1 minuto)
+## 🎓 Second Test - FizzBuzz (1 minute)
 
 ```bash
-npx npx ts-node agent.ts
+npx ts-node agent.ts "Create fizzbuzz.ts and run it"
 ```
 
-**Cosa succede:**
-1. 🔧 Tool: `edit_file` → Crea fizzbuzz.ts
-2. 🔧 Tool: `bash` → Esegue `ts-node fizzbuzz.ts`
+**What happens:**
+1. 🔧 Tool: `edit_file` → Creates fizzbuzz.ts
+2. 🔧 Tool: `bash` → Runs `ts-node fizzbuzz.ts`
 3. ✅ Output: `1 2 Fizz 4 Buzz...`
 
-## 📊 Cosa Stai Vedendo?
+## 📊 What Are You Seeing?
 
-### Il Loop in Azione
+### The Loop in Action
 ```
 User Input
     ↓
-Claude pensa → "Serve edit_file"
+Claude thinks → "Need edit_file"
     ↓
-Esegue → Crea file
+Executes → Creates file
     ↓
-Claude pensa → "Ora serve bash"
+Claude thinks → "Now need bash"
     ↓
-Esegue → Run script
+Executes → Runs script
     ↓
-Claude pensa → "Task complete"
+Claude thinks → "Task complete"
     ↓
-Mostra risultato
+Shows result
 ```
 
-### I 4 Tool in Uso
+### The 4 Tools in Use
 
-| Tool | Quando Viene Usato | Esempio |
-|------|-------------------|---------|
-| 📖 `read_file` | Leggere contenuti | "Leggi README.md" |
-| 📁 `list_files` | Esplorare directory | "Cosa c'è qui?" |
-| ⚙️ `bash` | Eseguire comandi | "Esegui il test" |
-| ✏️ `edit_file` | Creare/modificare | "Crea file.ts" |
+| Tool | When It's Used | Example |
+|------|----------------|---------|
+| 📖 `read_file` | Reading contents | "Read README.md" |
+| 📁 `list_files` | Exploring directories | "What's in here?" |
+| ⚙️ `bash` | Running commands | "Run the test" |
+| ✏️ `edit_file` | Creating/modifying | "Create file.ts" |
 
-## 💡 Test Veloci da Provare
+## 💡 Quick Tests to Try
 
 ### Test 1: Read
 ```bash
-npx npx ts-node agent.ts "Leggi il README e dimmi di cosa parla"
+npx ts-node agent.ts "Read the README and tell me what it's about"
 ```
 
 ### Test 2: Create
 ```bash
-npx npx ts-node agent.ts "Crea hello.txt con 'Hello from my agent!'"
+npx ts-node agent.ts "Create hello.txt with 'Hello from my agent!'"
 ```
 
 ### Test 3: Execute
 ```bash
-npx npx ts-node agent.ts "Esegui 'date' e dimmi che giorno è"
+npx ts-node agent.ts "Run 'date' and tell me what day it is"
 ```
 
 ### Test 4: Multi-step
 ```bash
-npx npx ts-node agent.ts "Crea test.js con console.log('works'), eseguilo, poi cancellalo"
+npx ts-node agent.ts "Create test.js with console.log('works'), run it, then delete it"
 ```
 
-## 🐛 Troubleshooting Rapido
+## 🐛 Quick Troubleshooting
 
-### Errore: "ANTHROPIC_API_KEY not found"
+### Error: "ANTHROPIC_API_KEY not found"
 ```bash
 export ANTHROPIC_API_KEY='your-key-here'
 ```
 
-### Errore: "ts-node: command not found"
+### Error: "ts-node: command not found"
 ```bash
 npm install
 ```
 
-### Errore: Tool execution failed
-- Controlla che il file path sia corretto
-- Verifica i permessi della directory
+### Error: Tool execution failed
+- Check that the file path is correct
+- Verify directory permissions
 
-## 📈 Livelli di Complessità
+## 📈 Complexity Levels
 
-### Livello 1: Single Tool ⭐
-Un solo tool per task
+### Level 1: Single Tool ⭐
+One tool per task
 ```bash
-npx ts-node agent.ts "Lista file"
+npx ts-node agent.ts "List files"
 ```
 
-### Livello 2: Multi Tool ⭐⭐
-Più tool in sequenza
+### Level 2: Multi Tool ⭐⭐
+Multiple tools in sequence
 ```bash
-npx ts-node agent.ts "Crea file.txt poi leggilo"
+npx ts-node agent.ts "Create file.txt then read it"
 ```
 
-### Livello 3: Complex Workflow ⭐⭐⭐
-Workflow articolato
+### Level 3: Complex Workflow ⭐⭐⭐
+Articulated workflow
 ```bash
-npx ts-node agent.ts "Analizza agent.ts, crea un summary.md, poi eseguilo con cat"
+npx ts-node agent.ts "Analyze agent.ts, create a summary.md, then run it with cat"
 ```
 
-## 🎯 Challenge di 5 Minuti
+## 🎯 5-Minute Challenge
 
-Prova a far fare all'agent questo task completo:
+Try to have the agent do this complete task:
 
 ```bash
-npx ts-node agent.ts "Crea una directory chiamata test-project, poi crea dentro 3 file: README.md con titolo 'My Project', package.json base, e index.ts con un hello world. Poi mostrami la struttura creata."
+npx ts-node agent.ts "Create a directory called test-project, then create 3 files inside: README.md with title 'My Project', a basic package.json, and index.ts with a hello world. Then show me the created structure."
 ```
 
-**Aspettati:**
+**Expect:**
 - 🔧 bash → `mkdir test-project`
-- 🔧 edit_file → Crea README.md
-- 🔧 edit_file → Crea package.json
-- 🔧 edit_file → Crea index.ts
-- 🔧 list_files → Mostra struttura
+- 🔧 edit_file → Creates README.md
+- 🔧 edit_file → Creates package.json
+- 🔧 edit_file → Creates index.ts
+- 🔧 list_files → Shows structure
 
-## 🧠 Cosa Hai Imparato?
+## 🧠 What Have You Learned?
 
-Nei primi 5 minuti hai visto:
-1. ✅ Come funziona il loop agentico
-2. ✅ Come Claude sceglie i tool
-3. ✅ Come i tool vengono eseguiti in sequenza
-4. ✅ Come il context si costruisce iterazione dopo iterazione
+In the first 5 minutes you've seen:
+1. ✅ How the agentic loop works
+2. ✅ How Claude chooses tools
+3. ✅ How tools are executed in sequence
+4. ✅ How context builds iteration after iteration
 
-## 📚 Next Steps (Dopo i 5 Minuti)
+## 📚 Next Steps (After the 5 Minutes)
 
-1. **Leggi ARCHITECTURE.md** → Capisci il loop in profondità
-2. **Leggi EXAMPLES.md** → Prova più test cases
-3. **Sperimenta** → Modifica i tool descriptions
-4. **Estendi** → Aggiungi il 5° tool (search)
+1. **Read ARCHITECTURE.md** → Understand the loop in depth
+2. **Read EXAMPLES.md** → Try more test cases
+3. **Experiment** → Modify tool descriptions
+4. **Extend** → Add the 5th tool (search)
 
 ## 💭 Geoffrey's Wisdom
 
 > "It's not that hard to build a coding agent. It's 300 lines of code running in a loop with LLM tokens."
 
-Hai appena costruito uno di questi agent in 5 minuti! 🎉
+You just built one of these agents in 5 minutes! 🎉
 
 ## 🔥 Pro Tips
 
-1. **Osserva il Console Log**: Ogni tool call viene loggato
-2. **Sperimenta con Query Vaghe**: Vedi come Claude interpreta
-3. **Prova Task Multi-Step**: Claude è bravo a scomporli
-4. **Non Aver Paura di Errori**: Sono parte del learning
+1. **Watch the Console Log**: Every tool call is logged
+2. **Experiment with Vague Queries**: See how Claude interprets them
+3. **Try Multi-Step Tasks**: Claude is good at breaking them down
+4. **Don't Be Afraid of Errors**: They're part of learning
 
-## ✨ Celebra! 
+## ✨ Celebrate!
 
-Hai appena:
-- ✅ Costruito il tuo primo coding agent
-- ✅ Capito il loop agentico
-- ✅ Visto i 4 primitivi in azione
-- ✅ Fatto girare task complessi
+You just:
+- ✅ Built your first coding agent
+- ✅ Understood the agentic loop
+- ✅ Saw the 4 primitives in action
+- ✅ Ran complex tasks
 
-**Questo è solo l'inizio.** 🚀
+**This is just the beginning.** 🚀
 
 ---
 
-**Remember**: 
+**Remember**:
 > "Go forward and build." — Geoffrey Huntley
 
-Next: Apri ARCHITECTURE.md e capisci come funziona sotto il cofano! 🏗️
+Next: Open ARCHITECTURE.md and understand how it works under the hood! 🏗️

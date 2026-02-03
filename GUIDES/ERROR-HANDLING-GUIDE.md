@@ -1,47 +1,47 @@
 # 🛡️ Error Handling in Agents - Deep Dive
 
-Guida completa su come gestire gli errori negli agent in modo robusto e professionale.
+Complete guide on how to handle errors in agents in a robust and professional manner.
 
 ---
 
-## 🎯 Perché l'Error Handling è Critico?
+## 🎯 Why is Error Handling Critical?
 
-Gli agent interagiscono con:
-- ❌ File system (file potrebbe non esistere)
-- ❌ Shell commands (comando potrebbe fallire)
-- ❌ Network (API potrebbe essere down)
-- ❌ User input (potrebbe essere malformato)
+Agents interact with:
+- ❌ File system (file might not exist)
+- ❌ Shell commands (command might fail)
+- ❌ Network (API might be down)
+- ❌ User input (might be malformed)
 
-**Senza error handling**: L'agent crasha e l'utente non sa perché! 💥
+**Without error handling**: The agent crashes and the user doesn't know why! 💥
 
-**Con error handling**: L'agent gestisce l'errore, informa Claude, Claude informa l'utente, e magari riprova! ✅
+**With error handling**: The agent handles the error, informs Claude, Claude informs the user, and maybe retries! ✅
 
 ---
 
-## 📊 I 3 Livelli di Error Handling
+## 📊 The 3 Levels of Error Handling
 
 ```
 ┌─────────────────────────────┐
-│  1. Tool Level              │  ← Cattura errori specifici
+│  1. Tool Level              │  ← Catches specific errors
 │     (readFile, bash, etc)   │
 └─────────────────────────────┘
            ↓
 ┌─────────────────────────────┐
-│  2. Executor Level          │  ← Cattura errori di tool execution
+│  2. Executor Level          │  ← Catches tool execution errors
 │     (executeTool function)  │
 └─────────────────────────────┘
            ↓
 ┌─────────────────────────────┐
-│  3. Loop Level              │  ← Cattura errori di API calls
+│  3. Loop Level              │  ← Catches API call errors
 │     (agentLoop function)    │
 └─────────────────────────────┘
 ```
 
 ---
 
-## 🔧 Livello 1: Tool-Level Error Handling
+## 🔧 Level 1: Tool-Level Error Handling
 
-### Pattern Base: Try-Catch con Messaggio Chiaro
+### Basic Pattern: Try-Catch with Clear Message
 
 ```typescript
 async function readFile(filePath: string): Promise<string> {
@@ -50,34 +50,34 @@ async function readFile(filePath: string): Promise<string> {
     console.log(`✓ Read file: ${filePath} (${content.length} bytes)`);
     return content;
   } catch (error) {
-    // ⬇️ Ritorna MESSAGGIO DI ERRORE, non throw!
+    // ⬇️ Return ERROR MESSAGE, don't throw!
     return `Error reading file: ${(error as Error).message}`;
   }
 }
 ```
 
-**Perché NON throw?**
+**Why NOT throw?**
 
 ```typescript
-// ❌ BAD - Crasha tutto l'agent
+// ❌ BAD - Crashes the entire agent
 async function readFile(filePath: string): Promise<string> {
   const content = await fs.readFile(filePath, "utf-8");
-  return content;  // Se fallisce → CRASH!
+  return content;  // If it fails → CRASH!
 }
 
-// ✅ GOOD - Claude riceve l'errore e può reagire
+// ✅ GOOD - Claude receives the error and can react
 async function readFile(filePath: string): Promise<string> {
   try {
     const content = await fs.readFile(filePath, "utf-8");
     return content;
   } catch (error) {
     return `Error reading file: ${(error as Error).message}`;
-    // Claude vede questo messaggio e può provare altro!
+    // Claude sees this message and can try something else!
   }
 }
 ```
 
-### Esempio: bash Tool
+### Example: bash Tool
 
 ```typescript
 async function runBash(command: string): Promise<string> {
@@ -88,29 +88,29 @@ async function runBash(command: string): Promise<string> {
     console.log(`✓ Command completed (${output.length} bytes)`);
     return output;
   } catch (error) {
-    // ⬇️ Messaggio di errore dettagliato
+    // ⬇️ Detailed error message
     const err = error as Error & { code?: number; stderr?: string };
     return `Error executing command: ${err.message}${err.stderr ? '\n' + err.stderr : ''}`;
   }
 }
 ```
 
-**Cosa succede in pratica**:
+**What happens in practice**:
 
 ```typescript
-// User chiede: "Esegui comando 'nonexistent-command'"
-// Claude chiama: bash({ command: "nonexistent-command" })
+// User asks: "Execute command 'nonexistent-command'"
+// Claude calls: bash({ command: "nonexistent-command" })
 
-// ❌ Senza error handling:
-// → CRASH! Agent muore
+// ❌ Without error handling:
+// → CRASH! Agent dies
 
-// ✅ Con error handling:
-// → Ritorna: "Error executing command: command not found: nonexistent-command"
-// → Claude riceve questo messaggio
-// → Claude risponde: "Il comando non esiste. Vuoi provare qualcos'altro?"
+// ✅ With error handling:
+// → Returns: "Error executing command: command not found: nonexistent-command"
+// → Claude receives this message
+// → Claude responds: "The command doesn't exist. Would you like to try something else?"
 ```
 
-### Esempio: edit_file Tool
+### Example: edit_file Tool
 
 ```typescript
 async function editFile(
@@ -120,19 +120,19 @@ async function editFile(
 ): Promise<string> {
   try {
     if (oldStr === "") {
-      // Crea nuovo file
+      // Create new file
       await fs.writeFile(filePath, newStr, "utf-8");
       console.log(`✓ Created new file: ${filePath} (${newStr.length} bytes)`);
       return `Successfully created file ${filePath}`;
     } else {
-      // Modifica file esistente
+      // Modify existing file
       const content = await fs.readFile(filePath, "utf-8");
-      
-      // ⬇️ VALIDAZIONE: old_str esiste nel file?
+
+      // ⬇️ VALIDATION: does old_str exist in the file?
       if (!content.includes(oldStr)) {
         return `Error: Could not find "${oldStr}" in ${filePath}`;
       }
-      
+
       const newContent = content.replace(oldStr, newStr);
       await fs.writeFile(filePath, newContent, "utf-8");
       console.log(`✓ Edited file: ${filePath}`);
@@ -144,13 +144,13 @@ async function editFile(
 }
 ```
 
-**Nota**: Oltre a try-catch, abbiamo anche **validazione logica**!
+**Note**: Besides try-catch, we also have **logical validation**!
 
 ---
 
-## 🎮 Livello 2: Executor-Level Error Handling
+## 🎮 Level 2: Executor-Level Error Handling
 
-### Pattern: Wrapper con Fallback
+### Pattern: Wrapper with Fallback
 
 ```typescript
 async function executeTool(toolName: string, toolInput: any): Promise<string> {
@@ -158,64 +158,64 @@ async function executeTool(toolName: string, toolInput: any): Promise<string> {
     switch (toolName) {
       case "read_file":
         return await readFile(toolInput.path);
-      
+
       case "list_files":
         return await listFiles(toolInput.path || ".");
-      
+
       case "bash":
         return await runBash(toolInput.command);
-      
+
       case "edit_file":
         return await editFile(
-          toolInput.path, 
-          toolInput.old_str, 
+          toolInput.path,
+          toolInput.old_str,
           toolInput.new_str
         );
-      
+
       default:
-        // ⬇️ Tool sconosciuto
+        // ⬇️ Unknown tool
         return `Unknown tool: ${toolName}`;
     }
   } catch (error) {
-    // ⬇️ Catch-all per errori non previsti
+    // ⬇️ Catch-all for unexpected errors
     return `Unexpected error executing ${toolName}: ${(error as Error).message}`;
   }
 }
 ```
 
-**Cosa protegge**:
-- ✅ Tool name typo/sconosciuto
-- ✅ Errori non catchati nei tool individuali
-- ✅ Problemi di parsing input
+**What it protects**:
+- ✅ Tool name typo/unknown
+- ✅ Uncaught errors in individual tools
+- ✅ Input parsing issues
 
 ---
 
-## 🔄 Livello 3: Loop-Level Error Handling
+## 🔄 Level 3: Loop-Level Error Handling
 
-### Pattern: Retry con Backoff
+### Pattern: Retry with Backoff
 
 ```typescript
 async function agentLoop(userMessage: string) {
   console.log("\n🤖 Agent starting...\n");
-  
+
   const messages: Anthropic.MessageParam[] = [
     { role: "user", content: userMessage }
   ];
 
-  const MAX_ITERATIONS = 20;  // ⬅️ Limite iterazioni
+  const MAX_ITERATIONS = 20;  // ⬅️ Iteration limit
   let iterations = 0;
 
   try {
     while (true) {
       iterations++;
-      
-      // ⬇️ Protezione contro loop infinito
+
+      // ⬇️ Protection against infinite loop
       if (iterations > MAX_ITERATIONS) {
         console.log(`⚠️  Reached max iterations (${MAX_ITERATIONS})`);
         break;
       }
 
-      // ⬇️ API call con error handling
+      // ⬇️ API call with error handling
       let response;
       try {
         response = await client.messages.create({
@@ -225,45 +225,45 @@ async function agentLoop(userMessage: string) {
           messages: messages,
         });
       } catch (error) {
-        // ⬇️ Errori API (rate limit, network, etc)
+        // ⬇️ API errors (rate limit, network, etc)
         console.error("❌ API Error:", error);
-        
-        // Se è rate limit, potresti fare retry
+
+        // If it's rate limit, you might retry
         if ((error as any).status === 429) {
           console.log("⏳ Rate limited, waiting 60s...");
           await new Promise(resolve => setTimeout(resolve, 60000));
-          continue;  // Riprova
+          continue;  // Retry
         }
-        
-        throw error;  // Altri errori → esci
+
+        throw error;  // Other errors → exit
       }
 
-      // ... resto del loop
+      // ... rest of the loop
     }
   } catch (error) {
-    // ⬇️ Catch finale
+    // ⬇️ Final catch
     console.error("\n❌ Fatal error in agent loop:");
     console.error(error);
     throw error;
   }
-  
+
   console.log("\n✅ Agent finished\n");
 }
 ```
 
 ---
 
-## 🎨 Pattern Avanzati
+## 🎨 Advanced Patterns
 
-### 1. Error Recovery con Retry
+### 1. Error Recovery with Retry
 
 ```typescript
 async function readFileWithRetry(
-  filePath: string, 
+  filePath: string,
   maxRetries: number = 3
 ): Promise<string> {
   let lastError: Error | null = null;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       const content = await fs.readFile(filePath, "utf-8");
@@ -271,14 +271,14 @@ async function readFileWithRetry(
     } catch (error) {
       lastError = error as Error;
       console.log(`⚠️  Retry ${i + 1}/${maxRetries} for ${filePath}`);
-      
+
       // Wait before retry (exponential backoff)
-      await new Promise(resolve => 
+      await new Promise(resolve =>
         setTimeout(resolve, Math.pow(2, i) * 1000)
       );
     }
   }
-  
+
   return `Error reading file after ${maxRetries} retries: ${lastError?.message}`;
 }
 ```
@@ -287,17 +287,17 @@ async function readFileWithRetry(
 
 ```typescript
 async function runBash(command: string): Promise<string> {
-  // ⬇️ Validazione input
+  // ⬇️ Input validation
   if (!command || command.trim() === "") {
     return "Error: Command cannot be empty";
   }
-  
-  // ⬇️ Safety check (opzionale)
+
+  // ⬇️ Safety check (optional)
   const dangerousCommands = ["rm -rf /", ":(){ :|:& };:"];
   if (dangerousCommands.some(cmd => command.includes(cmd))) {
     return "Error: Dangerous command detected and blocked";
   }
-  
+
   try {
     const { stdout, stderr } = await execAsync(command);
     return stdout || stderr;
@@ -340,15 +340,15 @@ async function readFileStructured(filePath: string): Promise<ToolResult> {
   }
 }
 
-// Uso:
+// Usage:
 async function executeTool(toolName: string, toolInput: any): Promise<string> {
   if (toolName === "read_file") {
     const result = await readFileStructured(toolInput.path);
-    
+
     if (result.success) {
       return result.data!;
     } else {
-      // ⬇️ Possiamo decidere cosa fare in base al code!
+      // ⬇️ We can decide what to do based on the code!
       if (result.error?.code === "ENOENT") {
         return `File not found: ${toolInput.path}. Would you like me to create it?`;
       }
@@ -363,40 +363,40 @@ async function executeTool(toolName: string, toolInput: any): Promise<string> {
 
 ## 🔍 Debugging Error Handling
 
-### Logging Strategico
+### Strategic Logging
 
 ```typescript
 async function runBash(command: string): Promise<string> {
-  // ⬇️ Log PRIMA dell'esecuzione
+  // ⬇️ Log BEFORE execution
   console.log(`⚙️  Executing: ${command}`);
-  
+
   try {
     const { stdout, stderr } = await execAsync(command);
     const output = stdout || stderr;
-    
-    // ⬇️ Log SUCCESS con dettagli
+
+    // ⬇️ Log SUCCESS with details
     console.log(`✓ Command completed (${output.length} bytes)`);
-    
+
     return output;
   } catch (error) {
     const err = error as Error;
-    
-    // ⬇️ Log ERROR con dettagli
+
+    // ⬇️ Log ERROR with details
     console.error(`❌ Command failed: ${command}`);
     console.error(`   Error: ${err.message}`);
-    
+
     return `Error executing command: ${err.message}`;
   }
 }
 ```
 
-**Output quando funziona**:
+**Output when successful**:
 ```
 ⚙️  Executing: ls -la
 ✓ Command completed (1245 bytes)
 ```
 
-**Output quando fallisce**:
+**Output when it fails**:
 ```
 ⚙️  Executing: nonexistent-command
 ❌ Command failed: nonexistent-command
@@ -417,15 +417,15 @@ async function editFile(
     oldLength: oldStr.length,
     newLength: newStr.length
   };
-  
+
   try {
     console.log(`📝 Editing file:`, context);
-    
-    // ... operazioni ...
-    
+
+    // ... operations ...
+
     console.log(`✓ Success:`, context);
     return `Successfully ${context.operation}d file ${filePath}`;
-    
+
   } catch (error) {
     console.error(`❌ Failed:`, context, error);
     return `Error ${context.operation}ing file: ${(error as Error).message}`;
@@ -437,7 +437,7 @@ async function editFile(
 
 ## 📊 Error Handling Checklist
 
-### Per Ogni Tool Function
+### For Every Tool Function
 
 - [ ] ✅ Wrapped in try-catch
 - [ ] ✅ Return error message (don't throw)
@@ -445,13 +445,13 @@ async function editFile(
 - [ ] ✅ Meaningful error messages
 - [ ] ✅ Logging (success & failure)
 
-### Per executeTool
+### For executeTool
 
 - [ ] ✅ Default case for unknown tools
 - [ ] ✅ Catch-all error handler
 - [ ] ✅ Type safety checks
 
-### Per agentLoop
+### For agentLoop
 
 - [ ] ✅ API call error handling
 - [ ] ✅ Max iterations limit
@@ -465,12 +465,12 @@ async function editFile(
 ### 1. Fail Gracefully
 
 ```typescript
-// ❌ BAD - Crasha tutto
+// ❌ BAD - Crashes everything
 async function readFile(path: string): Promise<string> {
   return await fs.readFile(path, "utf-8");
 }
 
-// ✅ GOOD - Ritorna errore come stringa
+// ✅ GOOD - Returns error as string
 async function readFile(path: string): Promise<string> {
   try {
     return await fs.readFile(path, "utf-8");
@@ -483,12 +483,12 @@ async function readFile(path: string): Promise<string> {
 ### 2. Be Specific
 
 ```typescript
-// ❌ BAD - Messaggio generico
+// ❌ BAD - Generic message
 catch (error) {
   return "Error";
 }
 
-// ✅ GOOD - Messaggio dettagliato
+// ✅ GOOD - Detailed message
 catch (error) {
   return `Error reading file ${filePath}: ${(error as Error).message}`;
 }
@@ -502,7 +502,7 @@ try {
   await doSomething();
 } catch {}
 
-// ✅ GOOD - Log per debugging
+// ✅ GOOD - Log for debugging
 try {
   console.log("Starting operation...");
   await doSomething();
@@ -516,13 +516,13 @@ try {
 
 ```typescript
 async function runBash(command: string): Promise<string> {
-  // ⬇️ Validazione PRIMA di try-catch
+  // ⬇️ Validation BEFORE try-catch
   if (!command || command.trim() === "") {
     return "Error: Command cannot be empty";
   }
-  
+
   try {
-    // ... esecuzione ...
+    // ... execution ...
   } catch (error) {
     // ...
   }
@@ -533,26 +533,26 @@ async function runBash(command: string): Promise<string> {
 
 ## 🧪 Testing Error Handling
 
-### Testa gli Edge Cases
+### Test Edge Cases
 
 ```bash
-# Test 1: File non esistente
-npx ts-node agent.ts "Leggi il file nonexistent.txt"
+# Test 1: Non-existent file
+npx ts-node agent.ts "Read file nonexistent.txt"
 
 # Expected: "Error reading file: ENOENT: no such file or directory"
 
-# Test 2: Comando invalido
-npx ts-node agent.ts "Esegui comando 'command-does-not-exist'"
+# Test 2: Invalid command
+npx ts-node agent.ts "Execute command 'command-does-not-exist'"
 
 # Expected: "Error executing command: command not found"
 
-# Test 3: Edit su file non esistente
-npx ts-node agent.ts "Modifica hello.txt sostituendo 'x' con 'y'"
+# Test 3: Edit on non-existent file
+npx ts-node agent.ts "Edit hello.txt replacing 'x' with 'y'"
 
-# Expected: "Error reading file: ENOENT..." o creazione file se gestito
+# Expected: "Error reading file: ENOENT..." or file creation if handled
 
-# Test 4: Directory invece di file
-npx ts-node agent.ts "Leggi node_modules"
+# Test 4: Directory instead of file
+npx ts-node agent.ts "Read node_modules"
 
 # Expected: "Error: EISDIR: illegal operation on a directory"
 ```
@@ -561,10 +561,10 @@ npx ts-node agent.ts "Leggi node_modules"
 
 ## 🎓 Real-World Example
 
-Ecco come gestirebbe un errore in un flusso completo:
+Here's how it would handle an error in a complete flow:
 
 ```
-User: "Crea test.txt con 'hello', leggilo, poi cancellalo"
+User: "Create test.txt with 'hello', read it, then delete it"
 
 Step 1: edit_file("test.txt", "", "hello")
   → Success: "Created test.txt"
@@ -573,72 +573,72 @@ Step 2: read_file("test.txt")
   → Success: "hello"
 
 Step 3: bash("rm test.txt")
-  → Success: "" (nessun output)
+  → Success: "" (no output)
 
-✅ Tutto ok!
+✅ All good!
 ```
 
 ```
-User: "Leggi nonexistent.txt"
+User: "Read nonexistent.txt"
 
 Step 1: read_file("nonexistent.txt")
   → try { fs.readFile(...) }
   → catch (error) {
        return "Error reading file: ENOENT: no such file or directory"
      }
-  → Claude riceve: "Error reading file: ENOENT..."
-  → Claude risponde: "Il file nonexistent.txt non esiste. Vuoi che lo crei?"
+  → Claude receives: "Error reading file: ENOENT..."
+  → Claude responds: "The file nonexistent.txt doesn't exist. Would you like me to create it?"
 
-✅ Errore gestito gracefully!
+✅ Error handled gracefully!
 ```
 
 ---
 
 ## 💡 Pro Tips
 
-1. **Return, Don't Throw**: Nei tool, return error messages
-2. **Be Descriptive**: Include file path, comando, etc. nell'errore
-3. **Log Everything**: Success e failure
-4. **Validate First**: Check input prima di operazioni costose
-5. **Fail Fast**: Se qualcosa è chiaramente sbagliato, ritorna errore subito
-6. **Context Matters**: Include info rilevanti nell'error message
+1. **Return, Don't Throw**: In tools, return error messages
+2. **Be Descriptive**: Include file path, command, etc. in the error
+3. **Log Everything**: Success and failure
+4. **Validate First**: Check input before expensive operations
+5. **Fail Fast**: If something is clearly wrong, return error immediately
+6. **Context Matters**: Include relevant info in the error message
 
 ---
 
-## 🎯 Esercizio Pratico
+## 🎯 Practical Exercise
 
-Aggiungi error handling robusto a questa funzione:
+Add robust error handling to this function:
 
 ```typescript
-// ❌ Versione senza error handling
+// ❌ Version without error handling
 async function createDirectory(dirPath: string): Promise<string> {
   await fs.mkdir(dirPath, { recursive: true });
   return `Created directory ${dirPath}`;
 }
 
-// ✅ Tua versione con error handling
+// ✅ Your version with error handling
 async function createDirectory(dirPath: string): Promise<string> {
-  // Il tuo codice qui!
-  // Considera:
-  // - path vuoto?
-  // - path già esistente?
-  // - permessi mancanti?
+  // Your code here!
+  // Consider:
+  // - empty path?
+  // - path already exists?
+  // - missing permissions?
   // - try-catch?
   // - logging?
 }
 ```
 
-**Soluzione**:
+**Solution**:
 ```typescript
 async function createDirectory(dirPath: string): Promise<string> {
   // Validation
   if (!dirPath || dirPath.trim() === "") {
     return "Error: Directory path cannot be empty";
   }
-  
+
   try {
     console.log(`📁 Creating directory: ${dirPath}`);
-    
+
     // Check if already exists
     try {
       await fs.access(dirPath);
@@ -646,11 +646,11 @@ async function createDirectory(dirPath: string): Promise<string> {
     } catch {
       // Doesn't exist, proceed to create
     }
-    
+
     await fs.mkdir(dirPath, { recursive: true });
     console.log(`✓ Created directory: ${dirPath}`);
     return `Successfully created directory ${dirPath}`;
-    
+
   } catch (error) {
     const err = error as Error;
     console.error(`❌ Failed to create directory ${dirPath}:`, err);
@@ -661,4 +661,4 @@ async function createDirectory(dirPath: string): Promise<string> {
 
 ---
 
-**Remember**: Good error handling è ciò che separa un toy project da production-ready code! 🛡️
+**Remember**: Good error handling is what separates a toy project from production-ready code! 🛡️

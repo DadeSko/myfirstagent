@@ -1,127 +1,127 @@
-# 🧪 Esempi di Test per l'Agent
+# 🧪 Test Examples for the Agent
 
-**Nota Importante**: Tutti gli esempi usano `npx ts-node` invece di solo `ts-node`. Questo funziona sempre senza bisogno di installazioni globali!
+**Important Note**: All examples use `npx ts-node` instead of just `ts-node`. This always works without needing global installations!
 
-## Test di Base
+## Basic Tests
 
-### 1. Lista File
+### 1. List Files
 ```bash
-npx ts-node agent.ts "Mostrami tutti i file in questa directory"
+npx ts-node agent.ts "Show me all files in this directory"
 ```
 
-### 2. Leggi File
+### 2. Read File
 ```bash
-npx ts-node agent.ts "Leggi il contenuto di README.md"
+npx ts-node agent.ts "Read the contents of README.md"
 ```
 
-### 3. Crea File Semplice
+### 3. Create Simple File
 ```bash
-npx ts-node agent.ts "Crea un file chiamato hello.txt con scritto 'Ciao dal mio primo agent!'"
+npx ts-node agent.ts "Create a file called hello.txt with 'Hello from my first agent!' written in it"
 ```
 
-### 4. Esegui Comando
+### 4. Execute Command
 ```bash
-npx ts-node agent.ts "Dimmi quanti file TypeScript ci sono in questa directory"
+npx ts-node agent.ts "Tell me how many TypeScript files are in this directory"
 ```
 
-## Test Avanzati
+## Advanced Tests
 
-### 5. FizzBuzz (come Geoffrey)
+### 5. FizzBuzz (like Geoffrey)
 ```bash
-npx ts-node agent.ts "Crea un file fizzbuzz.ts che implementa fizzbuzz fino a 20 ed eseguilo per verificare che funzioni"
+npx ts-node agent.ts "Create a file fizzbuzz.ts that implements fizzbuzz up to 20 and run it to verify it works"
 ```
 
-### 6. Analisi Codice
+### 6. Code Analysis
 ```bash
-npx ts-node agent.ts "Leggi agent.ts e fammi un sommario delle funzioni principali"
+npx ts-node agent.ts "Read agent.ts and give me a summary of the main functions"
 ```
 
 ### 7. Refactoring
 ```bash
-npx ts-node agent.ts "Crea una versione semplificata di agent.ts chiamata simple-agent.ts che ha solo il read_file tool"
+npx ts-node agent.ts "Create a simplified version of agent.ts called simple-agent.ts that only has the read_file tool"
 ```
 
 ### 8. Multi-step Task
 ```bash
-npx ts-node agent.ts "Crea una directory chiamata examples, poi crea 3 file dentro: example1.ts, example2.ts, example3.ts, ognuno con un semplice console.log"
+npx ts-node agent.ts "Create a directory called examples, then create 3 files inside: example1.ts, example2.ts, example3.ts, each with a simple console.log"
 ```
 
-## Test Creativi
+## Creative Tests
 
-### 9. Riddle Test (ispirato da Geoffrey)
+### 9. Riddle Test (inspired by Geoffrey)
 ```bash
-# Prima crea il riddle
+# First create the riddle
 echo "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?" > riddle.txt
 
-# Poi chiedi all'agent
-npx ts-node agent.ts "Leggi riddle.txt e dimmi la risposta"
+# Then ask the agent
+npx ts-node agent.ts "Read riddle.txt and tell me the answer"
 ```
 
-### 10. Generazione Documentazione
+### 10. Documentation Generation
 ```bash
-npx ts-node agent.ts "Analizza agent.ts e crea un file ARCHITECTURE.md che spiega come funziona l'agent"
+npx ts-node agent.ts "Analyze agent.ts and create an ARCHITECTURE.md file that explains how the agent works"
 ```
 
 ### 11. Test Suite Creator
 ```bash
-npx ts-node agent.ts "Crea un file test.ts con Jest che testa le funzioni readFile, listFiles, e runBash"
+npx ts-node agent.ts "Create a file test.ts with Jest that tests the readFile, listFiles, and runBash functions"
 ```
 
 ### 12. Package Creator
 ```bash
-npx ts-node agent.ts "Crea un nuovo package.json per un progetto chiamato 'my-tool' con TypeScript e le dipendenze base necessarie"
+npx ts-node agent.ts "Create a new package.json for a project called 'my-tool' with TypeScript and the necessary base dependencies"
 ```
 
-## Test di Debugging
+## Debugging Tests
 
 ### 13. Error Handling
 ```bash
-npx ts-node agent.ts "Prova a leggere un file che non esiste chiamato nonexistent.txt e dimmi cosa succede"
+npx ts-node agent.ts "Try to read a file that doesn't exist called nonexistent.txt and tell me what happens"
 ```
 
 ### 14. Performance Check
 ```bash
-npx ts-node agent.ts "Esegui il comando 'ls -la' e dimmi quanti file vedi"
+npx ts-node agent.ts "Run the command 'ls -la' and tell me how many files you see"
 ```
 
-## Test Workflow Reali
+## Real Workflow Tests
 
 ### 15. Blog Post Creator
 ```bash
-npx ts-node agent.ts "Crea una struttura per un blog post markdown chiamato 'my-agent-journey.md' con titolo, introduzione, 3 sezioni e conclusione"
+npx ts-node agent.ts "Create a structure for a markdown blog post called 'my-agent-journey.md' with title, introduction, 3 sections and conclusion"
 ```
 
 ### 16. Config File Generator
 ```bash
-npx ts-node agent.ts "Crea un file .gitignore appropriato per un progetto TypeScript/Node"
+npx ts-node agent.ts "Create an appropriate .gitignore file for a TypeScript/Node project"
 ```
 
 ### 17. Script Generator
 ```bash
-npx ts-node agent.ts "Crea uno script bash chiamato setup.sh che installa le dipendenze e configura l'environment"
+npx ts-node agent.ts "Create a bash script called setup.sh that installs dependencies and configures the environment"
 ```
 
-## Tips per Testare
+## Testing Tips
 
-1. **Inizia Semplice**: Testa un tool alla volta
-2. **Poi Combina**: Fai task che richiedono più tool insieme
-3. **Osserva il Loop**: Guarda come Claude decide quali tool usare
-4. **Sperimenta**: Prova query ambigue e vedi come Claude le interpreta
+1. **Start Simple**: Test one tool at a time
+2. **Then Combine**: Do tasks that require multiple tools together
+3. **Watch the Loop**: See how Claude decides which tools to use
+4. **Experiment**: Try ambiguous queries and see how Claude interprets them
 
-## Cosa Osservare
+## What to Observe
 
-- ⚙️ **Tool Selection**: Claude sceglie il tool giusto?
-- 🔄 **Loop Behavior**: Quante iterazioni servono?
-- ✅ **Success Rate**: Il task viene completato correttamente?
-- 🐛 **Error Handling**: Come gestisce gli errori?
+- ⚙️ **Tool Selection**: Does Claude choose the right tool?
+- 🔄 **Loop Behavior**: How many iterations are needed?
+- ✅ **Success Rate**: Is the task completed correctly?
+- 🐛 **Error Handling**: How does it handle errors?
 
-## Domande da Farsi
+## Questions to Ask Yourself
 
-- Quali tool vengono usati più spesso?
-- Ci sono tool che mancano per i tuoi use case?
-- Come potresti estendere l'agent per il tuo workflow?
-- Quali sono i limiti che hai trovato?
+- Which tools are used most often?
+- Are there tools missing for your use cases?
+- How could you extend the agent for your workflow?
+- What limitations have you found?
 
 ---
 
-Ricorda: **"300 linee di codice in un loop"** - Geoffrey Huntley
+Remember: **"300 lines of code in a loop"** - Geoffrey Huntley

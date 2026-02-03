@@ -1,16 +1,16 @@
-# 🚀 Migration Guide - Da Monolite a Moduli
+# 🚀 Migration Guide - From Monolith to Modules
 
-Questa guida spiega come migrare un agent monolitico come il tuo verso una struttura modulare.
+This guide explains how to migrate a monolithic agent like yours towards a modular structure.
 
 ## Step-by-Step Migration
 
-### Step 1: Crea la Struttura Directory
+### Step 1: Create Directory Structure
 
 ```bash
 mkdir -p tools/primitives tools/high-level
 ```
 
-### Step 2: Crea Types File
+### Step 2: Create Types File
 
 ```typescript
 // tools/types.ts
@@ -30,18 +30,18 @@ export interface ToolImplementation {
 }
 ```
 
-### Step 3: Estrai un Tool alla Volta
+### Step 3: Extract One Tool at a Time
 
-Per ogni tool nel monolite:
+For each tool in the monolith:
 
-1. **Identifica il tool**
+1. **Identify the tool**
 ```typescript
-// Nel monolite trovi:
+// In the monolith you find:
 const myTool: Tool = { ... };
 async function executeMy(input) { ... }
 ```
 
-2. **Crea file dedicato**
+2. **Create dedicated file**
 ```typescript
 // tools/primitives/my-tool.ts
 import { ToolImplementation } from "../types";
@@ -52,22 +52,22 @@ export const myTool: ToolImplementation = {
     description: "...",
     input_schema: { ... }
   },
-  
+
   execute: async (input) => {
-    // Copia l'implementazione qui
+    // Copy the implementation here
     return "result";
   }
 };
 ```
 
-3. **Aggiusta gli import**
+3. **Adjust imports**
 ```typescript
-// Se il tool usa fs, path, etc:
+// If the tool uses fs, path, etc:
 import * as fs from "fs/promises";
 import * as path from "path";
 ```
 
-### Step 4: Crea Index File
+### Step 4: Create Index File
 
 ```typescript
 // tools/index.ts
@@ -78,11 +78,11 @@ export { tool2 } from "./primitives/tool2";
 export type { Tool, ToolImplementation } from "./types";
 ```
 
-### Step 5: Refactora Agent.ts
+### Step 5: Refactor Agent.ts
 
-**Prima:**
+**Before:**
 ```typescript
-// Tutto nel file
+// Everything in the file
 const tool1: Tool = { ... };
 const tool2: Tool = { ... };
 
@@ -99,7 +99,7 @@ async function executeTool(name, input) {
 const tools = [tool1, tool2];
 ```
 
-**Dopo:**
+**After:**
 ```typescript
 import { tool1, tool2 } from "./tools";
 
@@ -118,51 +118,51 @@ async function executeTool(name, input) {
 ### Step 6: Test
 
 ```bash
-# Testa ogni tool individualmente
+# Test each tool individually
 npx ts-node -e "
 import { tool1 } from './tools';
 console.log(await tool1.execute({ ... }));
 "
 
-# Testa l'agent completo
+# Test the complete agent
 npx ts-node agent.ts "test command"
 ```
 
-## Checklist Migrazione
+## Migration Checklist
 
-- [ ] Directory structure creata
-- [ ] types.ts creato
-- [ ] Ogni tool estratto in file separato
-- [ ] index.ts con tutti gli export
-- [ ] agent.ts refactorizzato
-- [ ] Import paths corretti
-- [ ] Test passano
-- [ ] Documentation aggiornata
+- [ ] Directory structure created
+- [ ] types.ts created
+- [ ] Each tool extracted to separate file
+- [ ] index.ts with all exports
+- [ ] agent.ts refactored
+- [ ] Import paths correct
+- [ ] Tests pass
+- [ ] Documentation updated
 
 ## Tool Migration Template
 
-Usa questo template per ogni tool:
+Use this template for each tool:
 
 ```typescript
 import { ToolImplementation } from "../types";
-// Altri import necessari (fs, path, exec, etc)
+// Other necessary imports (fs, path, exec, etc)
 
 export const TOOL_NAME: ToolImplementation = {
   definition: {
     name: "tool_name",
     description: `
-    Descrizione dettagliata del tool.
-    
+    Detailed description of the tool.
+
     USE CASES:
-    - Caso d'uso 1
-    - Caso d'uso 2
+    - Use case 1
+    - Use case 2
     `,
     input_schema: {
       type: "object",
       properties: {
         param1: {
           type: "string",
-          description: "Descrizione parametro"
+          description: "Parameter description"
         }
       },
       required: ["param1"]
@@ -171,7 +171,7 @@ export const TOOL_NAME: ToolImplementation = {
 
   execute: async (input: { param1: string }) => {
     try {
-      // Implementazione
+      // Implementation
       return "success result";
     } catch (error) {
       return `Error: ${(error as Error).message}`;
@@ -182,64 +182,64 @@ export const TOOL_NAME: ToolImplementation = {
 
 ## Common Pitfalls
 
-### 1. Import Circolari
-❌ **Sbagliato:**
+### 1. Circular Imports
+❌ **Wrong:**
 ```typescript
 // tools/tool1.ts
-import { tool2 } from "./tool2";  // ← Evita!
+import { tool2 } from "./tool2";  // ← Avoid!
 ```
 
-✅ **Corretto:**
+✅ **Correct:**
 ```typescript
-// I tool devono essere indipendenti
-// Se serve composizione, crea un high-level tool
+// Tools should be independent
+// If composition is needed, create a high-level tool
 ```
 
 ### 2. Shared State
-❌ **Sbagliato:**
+❌ **Wrong:**
 ```typescript
 // tools/tool1.ts
-let sharedState = {};  // ← Evita state globale!
+let sharedState = {};  // ← Avoid global state!
 ```
 
-✅ **Corretto:**
+✅ **Correct:**
 ```typescript
-// Passa lo state come parametro
+// Pass state as parameter
 execute: async (input: { state: any }) => { ... }
 ```
 
-### 3. Path Relativi
-❌ **Sbagliato:**
+### 3. Relative Paths
+❌ **Wrong:**
 ```typescript
-import { myTool } from "../primitives/my-tool";  // Da agent.ts
+import { myTool } from "../primitives/my-tool";  // From agent.ts
 ```
 
-✅ **Corretto:**
+✅ **Correct:**
 ```typescript
-import { myTool } from "./tools";  // Usa index.ts
+import { myTool } from "./tools";  // Use index.ts
 ```
 
 ## Best Practices
 
 ### 1. Tool Size
-- **Primitivi**: 30-100 righe
-- **High-level**: 200-700 righe
-- Se supera 700 righe, considera split
+- **Primitives**: 30-100 lines
+- **High-level**: 200-700 lines
+- If exceeds 700 lines, consider splitting
 
 ### 2. Naming
 ```
 tools/
-├── primitives/         ← Operazioni atomiche
+├── primitives/         ← Atomic operations
 │   └── read-file.ts
-└── high-level/         ← Orchestrazioni
+└── high-level/         ← Orchestrations
     └── project-init.ts
 ```
 
 ### 3. Documentation
-Ogni tool deve avere:
-- Descrizione chiara
-- Examples nel description
-- Input schema ben documentato
+Every tool should have:
+- Clear description
+- Examples in the description
+- Well-documented input schema
 
 ### 4. Error Handling
 ```typescript
@@ -248,7 +248,7 @@ execute: async (input) => {
     // Logic
     return successResult;
   } catch (error) {
-    // SEMPRE cattura e ritorna stringa
+    // ALWAYS catch and return string
     return `Error: ${(error as Error).message}`;
   }
 }
@@ -263,7 +263,7 @@ import { readFileTool } from "../../tools/primitives/read-file";
 
 describe("readFileTool", () => {
   it("reads file successfully", async () => {
-    // Test isolato del tool
+    // Isolated tool test
   });
 });
 ```
@@ -275,14 +275,14 @@ import { agentLoop } from "../agent";
 
 describe("Agent", () => {
   it("completes task with multiple tools", async () => {
-    // Test del loop completo
+    // Complete loop test
   });
 });
 ```
 
-## Esempio Completo
+## Complete Example
 
-### Prima (agent.ts - 1000+ righe)
+### Before (agent.ts - 1000+ lines)
 ```typescript
 const readFile: Tool = { name: "read_file", ... };
 const listFiles: Tool = { name: "list_files", ... };
@@ -300,7 +300,7 @@ async function executeTool(name, input) {
 // ... agent loop ...
 ```
 
-### Dopo (agent.ts - ~150 righe)
+### After (agent.ts - ~150 lines)
 ```typescript
 import { readFileTool, listFilesTool } from "./tools";
 
@@ -314,7 +314,7 @@ async function executeTool(name, input) {
 // ... agent loop ...
 ```
 
-### Tool File (tools/primitives/read-file.ts - ~30 righe)
+### Tool File (tools/primitives/read-file.ts - ~30 lines)
 ```typescript
 import * as fs from "fs/promises";
 import { ToolImplementation } from "../types";
@@ -331,7 +331,7 @@ export const readFileTool: ToolImplementation = {
       required: ["path"]
     }
   },
-  
+
   execute: async (input: { path: string }) => {
     try {
       return await fs.readFile(input.path, "utf-8");
@@ -342,38 +342,38 @@ export const readFileTool: ToolImplementation = {
 };
 ```
 
-## Timeline Tipica
+## Typical Timeline
 
-Per un agent con 5-10 tool:
-- **Setup directory**: 5 minuti
-- **Crea types.ts**: 5 minuti
-- **Migra un tool**: 15-20 minuti
-- **Crea index.ts**: 10 minuti
-- **Refactora agent.ts**: 30 minuti
-- **Testing**: 30 minuti
+For an agent with 5-10 tools:
+- **Setup directory**: 5 minutes
+- **Create types.ts**: 5 minutes
+- **Migrate one tool**: 15-20 minutes
+- **Create index.ts**: 10 minutes
+- **Refactor agent.ts**: 30 minutes
+- **Testing**: 30 minutes
 
-**Totale: 2-3 ore** per una migrazione completa
+**Total: 2-3 hours** for a complete migration
 
-## Risorse
+## Resources
 
-- [REFACTORING.md](./REFACTORING.md) - Dettagli del refactoring
-- [COMPARISON.md](./COMPARISON.md) - Prima vs Dopo
-- [tools/](./tools/) - Codice di riferimento
+- [REFACTORING.md](./REFACTORING.md) - Refactoring details
+- [COMPARISON.md](./COMPARISON.md) - Before vs After
+- [tools/](./tools/) - Reference code
 
-## Domande Frequenti
+## Frequently Asked Questions
 
-### Q: Devo migrare tutti i tool in una volta?
-**A**: No! Migra uno alla volta. Puoi avere sia la versione vecchia che nuova temporaneamente.
+### Q: Do I have to migrate all tools at once?
+**A**: No! Migrate one at a time. You can have both the old and new versions temporarily.
 
-### Q: Come gestisco tool che dipendono l'uno dall'altro?
-**A**: Crea high-level tools che orchestrano i primitivi.
+### Q: How do I handle tools that depend on each other?
+**A**: Create high-level tools that orchestrate the primitives.
 
-### Q: Cosa faccio con helper functions condivise?
-**A**: Mettile in `tools/utils.ts` o nel tool che le usa principalmente.
+### Q: What do I do with shared helper functions?
+**A**: Put them in `tools/utils.ts` or in the tool that mainly uses them.
 
-### Q: Posso usare questo pattern per altri agent framework?
-**A**: Sì! Il pattern è framework-agnostic.
+### Q: Can I use this pattern for other agent frameworks?
+**A**: Yes! The pattern is framework-agnostic.
 
 ---
 
-Buona migrazione! 🚀
+Happy migrating! 🚀
