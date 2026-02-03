@@ -20,10 +20,10 @@ Transizione da Editor a Technical Contributor seguendo Geoffrey Huntley
 
 #### Skills Tecniche
 - [x] TypeScript async/await patterns
-- [ ] Anthropic SDK usage
-- [ ] Tool definition structure
-- [ ] Error handling in agents
-- [ ] File system operations
+- [x] Anthropic SDK usage
+- [x] Tool definition structure
+- [x] Error handling in agents
+- [x] File system operations
 
 ### 🧪 Esperimenti Fatti
 
@@ -128,7 +128,7 @@ ts-node agent.ts "..."
 
 ## 🎓 Connessioni con il Mio Lavoro
 
-### Come Posso Usare Questo a Effectual?
+### Come Posso Usare Questo a Effectful?
 
 #### Use Case 1: [Es. Automazione Blog Posts]
 **Problema:** 
@@ -150,15 +150,15 @@ ts-node agent.ts "..."
 ## 📚 Risorse che Ho Trovato Utili
 
 ### Articles/Blog Posts
-- [ ] [Geoffrey's Agent Workshop](https://ghuntley.com/agent/)
+- [x] [Geoffrey's Agent Workshop](https://ghuntley.com/agent/)
 - [ ] [Geoffrey's 6-month recap](https://ghuntley.com/six-month-recap/)
-- [ ] [Anthropic Tool Use Docs](https://docs.anthropic.com)
+- [x] [Anthropic Tool Use Docs](https://docs.anthropic.com)
 
 ### Videos/Talks
 - [ ] 
 
 ### Code Examples
-- [ ] [how-to-build-a-coding-agent repo](https://github.com/ghuntley/how-to-build-a-coding-agent)
+- [x] [how-to-build-a-coding-agent repo](https://github.com/ghuntley/how-to-build-a-coding-agent)
 
 ---
 
@@ -172,7 +172,7 @@ ts-node agent.ts "..."
 ### Short-term (Prossime 2 Settimane)
 - [ ] Aggiungere 5° tool (code search)
 - [ ] Integrare con MCP server
-- [ ] Build agent per specifico use case Effectual
+- [ ] Build agent per specifico use case Effectful
 
 ### Long-term (Fine Programma 8 Settimane)
 - [ ] Agent personalizzato per blog workflow
