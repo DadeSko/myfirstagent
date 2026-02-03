@@ -11,13 +11,14 @@ A TypeScript agent built following Geoffrey Huntley's methodology.
 As Geoffrey says:
 > "300 lines of code in a loop with LLM tokens. It really is that simple."
 
-This agent implements the **5 fundamental primitives** of every professional coding agent:
+This agent implements the **6 fundamental primitives** of every professional coding agent:
 
 1. **📖 Read Tool** - Reads files
 2. **📁 List Tool** - Lists directories
 3. **⚙️ Bash Tool** - Executes commands
 4. **✏️ Edit Tool** - Modifies/creates files
 5. **🔍 Code Search Tool** - Searches patterns in code (ripgrep)
+6. **🔧 Git Operations Tool** - Manages Git operations
 
 ## 🚀 Setup
 
@@ -49,6 +50,12 @@ npx ts-node agent.ts "Search for all async functions in the project"
 
 # Example 6: Find TODOs
 npx ts-node agent.ts "Find all TODOs and FIXMEs in the code"
+
+# Example 7: Git operations (new!)
+npx ts-node agent.ts "Check git status and show recent commits"
+
+# Example 8: Stage and commit
+npx ts-node agent.ts "Stage all changes and commit with message 'feat: add new feature'"
 ```
 
 **Note**: Use `npx ts-node` instead of just `ts-node` if you don't have ts-node installed globally.
@@ -115,6 +122,14 @@ await codeSearch({ pattern: "async function", file_type: "ts" })
 Searches patterns in code using ripgrep. The 5th primitive according to Geoffrey:
 > "What if I were to tell you that there is no magic for indexing source code? Nearly every coding tool uses ripgrep under the hood."
 
+### 6. Git Operations Tool
+```typescript
+await gitOperations({ operation: "status" })
+await gitOperations({ operation: "add", files: ["."] })
+await gitOperations({ operation: "commit", message: "feat: new feature" })
+```
+Manages Git operations like status, add, commit, push, pull, log, diff, branch, and checkout.
+
 ## 📚 Documentation
 
 Complete documentation available:
@@ -167,13 +182,14 @@ Complete documentation available:
 
 ## 🔮 Next Steps
 
-Once you master these 5 primitives, you can:
+Once you master these 6 primitives, you can:
 
 1. ✅ ~~Add a **Search Tool** (ripgrep)~~ - Completed!
-2. Implement **MCP servers** to extend capabilities
-3. Create specialized agents for specific workflows
-4. Build multi-agent orchestrations
-5. Add caching and performance optimizations
+2. ✅ ~~Add **Git Operations Tool**~~ - Completed!
+3. Implement **MCP servers** to extend capabilities
+4. Create specialized agents for specific workflows
+5. Build multi-agent orchestrations
+6. Add caching and performance optimizations
 
 ## 💭 Key Quotes
 

@@ -14,6 +14,7 @@ export {
   CodeSearchOptions,
   SearchMatch,
 } from "./primitives/code-search";
+export { gitOperationsTool } from "./primitives/git-operations";
 
 // High-level tools
 export {
@@ -38,6 +39,7 @@ import { listFilesTool } from "./primitives/list-files";
 import { bashTool } from "./primitives/bash";
 import { editFileTool } from "./primitives/edit-file";
 import { codeSearchTool } from "./primitives/code-search";
+import { gitOperationsTool } from "./primitives/git-operations";
 import { workspaceManagerTool } from "./high-level/workspace-manager";
 
 export const ALL_TOOLS = [
@@ -46,5 +48,6 @@ export const ALL_TOOLS = [
   bashTool,
   editFileTool,
   codeSearchTool,
+  gitOperationsTool,
   workspaceManagerTool,
 ];
