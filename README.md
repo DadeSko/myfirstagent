@@ -141,10 +141,11 @@ Complete documentation available:
 
 ### In-Depth Technical Guides
 
-- **[TOOL-DEFINITIONS-GUIDE.md](TOOL-DEFINITIONS-GUIDE.md)** - Tool definition structure
-- **[ERROR-HANDLING-GUIDE.md](ERROR-HANDLING-GUIDE.md)** - Error handling patterns
-- **[FILESYSTEM-GUIDE.md](FILESYSTEM-GUIDE.md)** - Filesystem operations
-- **[CODE-SEARCH-GUIDE.md](CODE-SEARCH-GUIDE.md)** - Code search implementation
+- **[TOOL-DEFINITIONS-GUIDE.md](GUIDES/TOOL-DEFINITIONS-GUIDE.md)** - Tool definition structure
+- **[ERROR-HANDLING-GUIDE.md](GUIDES/ERROR-HANDLING-GUIDE.md)** - Error handling patterns
+- **[FILESYSTEM-GUIDE.md](GUIDES/FILESYSTEM-GUIDE.md)** - Filesystem operations
+- **[CODE-SEARCH-GUIDE.md](GUIDES/CODE-SEARCH-GUIDE.mdd)** - Code search implementation
+- **[WORKSPACE-MANAGER-GUIDE](GUIDES/WORKSPACE-MANAGER-GUIDE.md)** - Workspace manager tool implementation
 
 ### Setup & Troubleshooting
 
