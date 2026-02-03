@@ -89,7 +89,7 @@ Add Result    Show Response
 [Loop Back]
 ```
 
-## 🛠️ The 5 Primitives
+## 🛠️ The 6 Primitives
 
 ### 1. Read File Tool
 ```typescript
