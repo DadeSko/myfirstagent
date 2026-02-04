@@ -1,17 +1,26 @@
 {
   "name": "davide-first-agent",
   "version": "1.0.0",
-  "description": "Davide's first agent following Geoffrey Huntley's methodology",
+  "description": "Davide's first agent following Geoffrey Huntley's methodology with MCP integration",
   "main": "agent.ts",
   "scripts": {
     "agent": "ts-node agent.ts",
-    "build": "tsc"
+    "agent:mcp": "ts-node agent-with-mcp.ts",
+    "build": "tsc",
+    "test:mcp": "ts-node tools/mcp/test-mcp.ts"
   },
-  "keywords": ["agent", "ai", "coding-agent", "anthropic"],
+  "keywords": [
+    "agent",
+    "ai",
+    "coding-agent",
+    "anthropic",
+    "mcp"
+  ],
   "author": "Davide",
   "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.1"
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@modelcontextprotocol/sdk": "^1.25.3"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
