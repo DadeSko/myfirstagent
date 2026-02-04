@@ -5,9 +5,13 @@
   "main": "agent.ts",
   "scripts": {
     "agent": "ts-node agent.ts",
-    "agent:mcp": "ts-node agent-with-mcp.ts",
+    "agent:mcp": "MCP_SERVERS=github,filesystem ts-node agent-with-mcp.ts",
+    "agent:gh": "MCP_SERVERS=github ts-node agent-with-mcp.ts",
+    "agent:slack": "MCP_SERVERS=slack ts-node agent-with-mcp.ts",
+    "agent:fs": "MCP_SERVERS=filesystem ts-node agent-with-mcp.ts",
+    "agent:full": "MCP_SERVERS=github,slack ts-node agent-with-mcp.ts",
     "build": "tsc",
-    "test:mcp": "ts-node tools/mcp/test-mcp.ts"
+    "test:mcp": "MCP_SERVERS=github ts-node tools/mcp/test-mcp.ts"
   },
   "keywords": [
     "agent",
